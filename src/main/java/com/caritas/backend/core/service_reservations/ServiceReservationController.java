@@ -1,0 +1,52 @@
+package com.caritas.backend.core.service_reservations;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.caritas.backend.core.service_reservations.dtos.ServiceReservationRequest;
+import com.caritas.backend.core.service_reservations.dtos.ServiceReservationResponse;
+
+@RestController
+@RequestMapping("/service-reservations")
+public class ServiceReservationController {
+
+    private final ServiceReservationService serviceReservationService;
+
+    public ServiceReservationController(ServiceReservationService serviceReservationService) {
+        this.serviceReservationService = serviceReservationService;
+    }
+
+    @GetMapping
+    public List<ServiceReservationResponse> getAllServiceReservations() {
+        return serviceReservationService.getAllServiceReservations();
+    }
+
+    @GetMapping("/{id}")
+    public ServiceReservationResponse getServiceReservationById(@PathVariable UUID id) {
+        return serviceReservationService.getServiceReservationById(id);
+    }
+
+    @PostMapping
+    public ServiceReservationResponse createServiceReservation(@RequestBody ServiceReservationRequest request) {
+        return serviceReservationService.createServiceReservation(request);
+    }
+
+    @PutMapping("/{id}")
+    public ServiceReservationResponse updateServiceReservation(@PathVariable UUID id, @RequestBody ServiceReservationRequest request) {
+        return serviceReservationService.updateServiceReservation(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteServiceReservation(@PathVariable UUID id) {
+        serviceReservationService.deleteServiceReservation(id);
+    }
+}

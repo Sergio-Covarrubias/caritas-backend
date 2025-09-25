@@ -1,0 +1,15 @@
+create table hostel_services (id uuid not null, hostel_id uuid not null, service_id uuid not null, primary key (id));
+create table hostels (id uuid not null, description TEXT not null, name varchar(255) not null, primary key (id));
+create table reservations (id uuid not null, active boolean default true not null, end_date date not null, people_count integer not null, start_date date not null, hostel_id uuid not null, user_id varchar(255) not null, primary key (id));
+create table service_interests (id uuid not null, reservation_id uuid not null, service_id uuid not null, primary key (id));
+create table service_reservations (id uuid not null, external_reservation_id varchar(255) not null, reservation_id uuid not null, service_id uuid not null, primary key (id));
+create table services (id uuid not null, display_name varchar(255) not null, type varchar(255) not null, primary key (id));
+create table users (id varchar(255) not null, email varchar(255) not null, first_name varchar(255) not null, last_name varchar(255) not null, phone_number varchar(255) not null, primary key (id));
+alter table if exists hostel_services add constraint FKcwyltwasfhxdjcw1wtf1tj5n6 foreign key (hostel_id) references hostels;
+alter table if exists hostel_services add constraint FK1wuqtlqkecbjdu888vs66f705 foreign key (service_id) references services;
+alter table if exists reservations add constraint FKs01qhgr1imvr9sxinr03u0a81 foreign key (hostel_id) references hostels;
+alter table if exists reservations add constraint FKb5g9io5h54iwl2inkno50ppln foreign key (user_id) references users;
+alter table if exists service_interests add constraint FK384u254gq0csapt23a21k7474 foreign key (reservation_id) references reservations;
+alter table if exists service_interests add constraint FK7jjwopw9vgpx6xpmplr5rnttc foreign key (service_id) references services;
+alter table if exists service_reservations add constraint FKkm440m75x5d1d1mxj1hw8ilcl foreign key (reservation_id) references reservations;
+alter table if exists service_reservations add constraint FKf28nhpfk1d229o00o25efvr7u foreign key (service_id) references services;
