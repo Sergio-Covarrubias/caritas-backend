@@ -1,0 +1,59 @@
+services:
+  database:
+    image: postgres:16
+    container_name: database
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+      - "5433:5432" # For using a local client to connect to the DB 
+    volumes:
+      - DB_Volume:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  core:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/core/Dockerfile-staging
+    container_name: core
+    environment:
+      DB_HOST: jdbc:postgresql://database:5432/caritas_db
+      BASE_PATH: /api
+      STAGE: prod
+      
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - database
+    volumes:
+      - core_data:/app
+    ports:
+      - "8081:8080"
+    networks:
+      - backend
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - core
+    restart: always
+    networks:
+      - backend
+
+volumes:
+  DB_Volume:
+  core_data:
+
+networks:
+  backend:
+    driver: bridge
