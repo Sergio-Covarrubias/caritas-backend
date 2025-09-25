@@ -1,0 +1,7 @@
+# --- Dev image: Maven + JDK ---
+FROM maven:3.9.6-eclipse-temurin-21
+
+WORKDIR /app
+
+# Start Spring Boot with hot reload (Maven)
+CMD ["./mvnw", "spring-boot:run"]
