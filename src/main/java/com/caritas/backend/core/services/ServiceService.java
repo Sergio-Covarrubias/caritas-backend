@@ -34,7 +34,7 @@ public class ServiceService {
     }
 
     public ServiceResponse createService(ServiceRequest request) {
-        ServiceEntity service = new ServiceEntity(request.displayName(), request.type());
+        ServiceEntity service = new ServiceEntity(request.price(), request.type());
         ServiceEntity saved = serviceRepository.save(service);
 
         return new ServiceResponse(saved);
@@ -44,7 +44,7 @@ public class ServiceService {
         ServiceEntity service = serviceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Service not found"));
 
-        service.setDisplayName(request.displayName());
+        service.setPrice(request.price());
         service.setType(request.type());
 
         ServiceEntity updated = serviceRepository.save(service);

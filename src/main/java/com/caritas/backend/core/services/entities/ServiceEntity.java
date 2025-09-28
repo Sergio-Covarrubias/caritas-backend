@@ -18,8 +18,8 @@ public class ServiceEntity {
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @Column(name = "display_name", nullable = false)
-    private String displayName;
+    @Column(name = "price", nullable = false)
+    private Float price;
 
     @Column(name = "type", nullable = false)
     private String type;
@@ -36,8 +36,8 @@ public class ServiceEntity {
     public ServiceEntity() {
     }
 
-    public ServiceEntity(String displayName, String type) {
-        this.displayName = displayName;
+    public ServiceEntity(Float price, String type) {
+        this.price = price;
         this.type = type;
     }
 
@@ -45,12 +45,12 @@ public class ServiceEntity {
         return id;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public Float getPrice() {
+        return price;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public void setPrice(Float price) {
+        this.price = price;
     }
 
     public String getType() {

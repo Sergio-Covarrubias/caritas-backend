@@ -1,210 +1,132 @@
-import os, time, uuid
 import requests
-from faker import Faker
-from datetime import timedelta
 
-fake = Faker()
-
-
-BASE_URL = 'http://localhost:8080'
-WIPE_ENDPOINT = '/api/dev/wipe'
-USERS_ENDPOINT = '/api/users'
-SERVICES_ENDPOINT = '/api/services'
-HOSTELS_ENDPOINT = '/api/hostels'
-HOSTEL_SERVICES_ENDPOINT = '/api/hostel-services'
-RESERVATIONS_ENDPOINT = '/api/reservations'
-SERVICE_INTERESTS_ENDPOINT = '/api/service-interests'
-SERVICE_RESERVATIONS_ENDPOINT = '/api/service-reservations'
+BASE_URL = "http://localhost:8080/api"
+WIPE_ENDPOINT = "/dev/wipe"
+USERS_ENDPOINT = "/users"
+HOSTELS_ENDPOINT = "/hostels"
+SERVICES_ENDPOINT = "/services"
+HOSTEL_SERVICES_ENDPOINT = "/hostel-services"
 
 def wipe_data():
-    r = requests.post(BASE_URL + WIPE_ENDPOINT, json={})
+    r = requests.post(BASE_URL + WIPE_ENDPOINT)
     r.raise_for_status()
+    print("Wiped all data")
 
 def create_user():
-    payload = {'id': '123456', 'firstName': 'Sergio Alejandro', 'lastName': 'Covarrubias Cázares', 'email': 'example@gmail.com', 'phoneNumber': '6444123456'}
+    payload = {
+        "id": "123456",
+        "firstName": "Sergio Alejandro",
+        "lastName": "Covarrubias Cázares",
+        "email": "example@gmail.com",
+        "phoneNumber": "6444123456"
+    }
     r = requests.post(BASE_URL + USERS_ENDPOINT, json=payload)
     r.raise_for_status()
+    print("Created user")
     return r.json()
 
 def create_services():
     services_data = [
-        {'displayName': 'Laundry', 'type': 'laundry'},
-        {'displayName': 'Bath', 'type': 'bath'}
+        {"type": "hostel", "price": 30.0},
+        {"type": "breakfast", "price": 15.0},
+        {"type": "meal", "price": 15.0},
+        {"type": "dinner", "price": 10.0},
+        {"type": "laundry", "price": 10.0},
+        {"type": "shower", "price": 10.0},
+        {"type": "transportation", "price": 20.0},
+        {"type": "psychological_check", "price": 0.0},
+        {"type": "dental_check", "price": 0.0},
+        {"type": "documents", "price": 5.0}
     ]
 
     results = []
-    for service in services_data:
-        payload = service
-        r = requests.post(BASE_URL + SERVICES_ENDPOINT, json=payload)
+    for s in services_data:
+        r = requests.post(BASE_URL + SERVICES_ENDPOINT, json=s)
         r.raise_for_status()
         results.append(r.json())
-
+    print(f"Created {len(results)} services")
     return results
 
 def create_hostels():
     hostels_data = [
-        {'name': 'Albergue A', 'description': 'Descripción del albergue A'},
-        {'name': 'Albergue B', 'description': 'Descripción del albergue B'},
+        {
+            "name": "Posada del Peregrino",
+            "description": "Este es el albergue Posada del Peregrino",
+            "maxCapacity": 30,
+            "locationUrl": "https://maps.app.goo.gl/cCnyrwYFLcMK6RHw6",
+            "imageUrls": [
+                "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nr7cjm7Qelam-mKgI5Q4-6KmZ2SdSw7a9Qs6CKRhp7uHzmCXF1efAEnL4aXyOcQ3dj63OhZcYE9Mj7zIBELJR0z0kRvAIyk5hlre-32KpaJ9x-cR2H29SOn-iXdbIiFupMtV6x0NQ=w203-h152-k-no",
+                "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?output=thumbnail&cb_client=maps_sv.tactile.gps&panoid=ShVWyLi_jzrDtqXOe7uP9g&w=735&h=362&thumb=2&yaw=296.62482&pitch=0",
+                "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nrXG4jTxTf5el85RzF2NYxsADpTo-9LS88tc5qDilMvh_uM3D-1psYFd5DXUHK_moTSPOowNIxyZrAWvinJ-I6EhDLrXqlLQL3mJnjNcq9YnaYdUc4XcvWdNN1PvMApLu5OxwcXXg=s660-k-no"
+            ]
+        },
+        {
+            "name": "Divina Providencia",
+            "description": "Este es el albergue Divina Providencia",
+            "maxCapacity": 30,
+            "locationUrl": "https://maps.app.goo.gl/skRvdYhFNKpqXcdq9",
+            "imageUrls": [
+                "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=_oeMYgkm-Z0ANaoEc4hg3A&cb_client=search.gws-prod.gps&w=408&h=240&yaw=311.8523&pitch=0&thumbfov=100",
+                "https://pixabay.com/get/gfbf0742d1384412e5817049021efcb7df31958be0f6c8bb4d6b62446d1b6572464e98b6f0ba04cb7b5f6da271ffafe7e25c30763531fd06c3e135ea948fc78b270c2c74f6c928b91f6ba81b5d6959cf6_640.jpg",
+                "g4ac829c5370c8fd78e2cce6cb5af0c5dde876707f5d442d7142edaf85328a9daaf4328ab1159057632f94fc088ba229be3a421a425a376f144c644f5ce58485e137a86abb9efb89c73189e02e9d44baf_640"
+            ]
+        },
+        {
+            "name": "Apodaca",
+            "description": "Este es el albergue Apodaca",
+            "maxCapacity": 30,
+            "locationUrl": "https://maps.app.goo.gl/Y4mjL2uSjFEo2QAV7",
+            "imageUrls": [
+                "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nqLzmmKaTb3Zs7ktgxH-ExIZYvJ1yJTkrfYXsWpBF8vGg6mgaZHnud2_mcsdze2jnlkvJQ272PEmWv0Lc7KR9dtNKtpLV3i-ADoRsLVFMHbwKiH5HjHFY6l7wrFPmJDOCzL260=w203-h114-k-no",
+                "https://lh3.googleusercontent.com/gps-cs-s/AC9h4nrCkuBshWtNW5N7KeQsnoQGxuzjlv8U8HqZyt83P0miQxo-e2-HyuH5L_HuzdA0T8VJ-3XLM0Xk0-pezy0Ol-vBYjfDY-zVefZuhDWrpg24B9-NHfYj2jahbQ7rNUA2wwKb1IzbKXos9INc=w203-h152-k-no",
+                "https://lh3.googleusercontent.com/gps-cs-s/AC9h4np2TW_2xqnzEG5ryNEXKC9jsvXNVxMQy05AAz9z87zGYNRDXXs2wxPJU0CQI3ebd7i89rPy01e73hPQfQItEWYyMBHzFEuonS6Sf1WCV1HaXdY1RExR4_VfbHKO3HV2MEXtk-OR=w203-h360-k-no"
+            ]
+        }
     ]
 
     results = []
-    for hostel in hostels_data:
-        payload = hostel
-        r = requests.post(BASE_URL + HOSTELS_ENDPOINT, json=payload)
+    for h in hostels_data:
+        r = requests.post(BASE_URL + HOSTELS_ENDPOINT, json=h)
         r.raise_for_status()
         results.append(r.json())
-
+    print(f"Created {len(results)} hostels")
     return results
 
 def create_hostel_services(hostels, services):
-    hostel_A = hostels[0]
-    hostel_B = hostels[1]
-
-    laundry_service = services[0]
-    bath_service = services[1]
-
-    hostel_services_data = [
-        {'hostelId': hostel_A['id'], 'serviceId': laundry_service['id']},
-        {'hostelId': hostel_A['id'], 'serviceId': bath_service['id']},
-        {'hostelId': hostel_B['id'], 'serviceId': laundry_service['id']}
-    ]
-
     results = []
-    for hostel_service in hostel_services_data:
-        payload = hostel_service
-        r = requests.post(BASE_URL + HOSTEL_SERVICES_ENDPOINT, json=payload)
-        r.raise_for_status()
-        results.append(r.json())
-    
-    return results
-
-def create_reservation(user_id, hostel_id):    
-    start_date = fake.date_between(start_date='+1d', end_date='+30d')
-    end_date = start_date + timedelta(days=fake.random_int(min=1, max=14))
-
-
-    start = start_date.strftime("%Y-%m-%d")
-    end = end_date.strftime("%Y-%m-%d")
-    
-    payload = {
-        'userId': str(user_id),
-        'hostelId': str(hostel_id),
-        'startDate': start,
-        'endDate': end,
-        'peopleCount': fake.random_int(min=1, max=6),
-    }
-
-    r = requests.post(BASE_URL + RESERVATIONS_ENDPOINT, json=payload)
-    r.raise_for_status()
-    return r.json()
-
-def create_service_interest_A(reservation, services):
-    laundry_service = services[0]
-    bath_service = services[1]
-
-    service_interests_data = [
-        {'reservationId': reservation['id'], 'serviceId': bath_service['id']}
-    ]
-
-    results = []
-    for service_interest in service_interests_data:
-        payload = service_interest
-        r = requests.post(BASE_URL + SERVICE_INTERESTS_ENDPOINT, json=payload)
-        r.raise_for_status()
-        results.append(r.json())
-
-    return results
-
-def create_service_interest_B(reservation, services):
-    laundry_service = services[0]
-    bath_service = services[1]
-
-    service_interests_data = [
-        {'reservationId': reservation['id'], 'serviceId': laundry_service['id']}
-    ]
-
-    results = []
-    for service_interest in service_interests_data:
-        payload = service_interest
-        r = requests.post(BASE_URL + SERVICE_INTERESTS_ENDPOINT, json=payload)
-        r.raise_for_status()
-        results.append(r.json())
-
-    return results
-
-def create_service_reservation_A(reservation, services):
-    laundry_service = services[0]
-    bath_service = services[1]
-
-    service_reservations_data = [
-        {'reservationId': reservation['id'], 'serviceId': bath_service['id'], 'externalReservationId': 'abc'}
-    ]
-
-    results = []
-    for service_reservation in service_reservations_data:
-        payload = service_reservation
-        r = requests.post(BASE_URL + SERVICE_RESERVATIONS_ENDPOINT, json=payload)
-        r.raise_for_status()
-        results.append(r.json())
-
-    return results
-
-def create_service_reservation_B(reservation, services):
-    laundry_service = services[0]
-    bath_service = services[1]
-
-    service_reservations_data = [
-        {'reservationId': reservation['id'], 'serviceId': laundry_service['id'], 'externalReservationId': 'xyz'}
-    ]
-
-    results = []
-    for service_reservation in service_reservations_data:
-        payload = service_reservation
-        r = requests.post(BASE_URL + SERVICE_RESERVATIONS_ENDPOINT, json=payload)
-        r.raise_for_status()
-        results.append(r.json())
-
+    for hostel in hostels:
+        for service in services:
+            payload = {
+                "hostelId": hostel["id"],
+                "serviceId": service["id"]
+            }
+            r = requests.post(BASE_URL + HOSTEL_SERVICES_ENDPOINT, json=payload)
+            r.raise_for_status()
+            results.append(r.json())
+    print(f"Linked {len(results)} hostel-services (all hostels to all services)")
     return results
 
 def main():
     try:
-        print('WIPING DATA')
+        print("=== STARTING SEED SCRIPT ===")
         wipe_data()
 
         user = create_user()
-        print('-- USER --')
-        print(user)
+        print("User:", user)
 
         services = create_services()
-        print('-- SERVICES --')
-        print(services)
+        print("Services:", services)
 
         hostels = create_hostels()
-        print('-- HOSTELS --')
-        print(hostels)
-        
+        print("Hostels:", hostels)
+
         hostel_services = create_hostel_services(hostels, services)
-        print('-- HOSTEL SERVICES --')
-        print(hostel_services)
+        print("Hostel-Services:", hostel_services)
 
-        reservation_A = create_reservation(user['id'], hostels[0]['id'])
-        reservation_B = create_reservation(user['id'], hostels[1]['id'])
-        print('-- RESERVATIONS --')
-        print([reservation_A, reservation_B])
-
-        service_interests_A = create_service_interest_A(reservation_A, services)
-        service_interests_B = create_service_interest_B(reservation_B, services)
-        print('-- SERVICE INTERESTS --')
-        print(service_interests_A + service_interests_B)
-
-
-        service_reservations_A = create_service_reservation_A(reservation_A, services)
-        service_reservations_B = create_service_reservation_B(reservation_B, services)
-        print('-- SERVICE RESERVATIONS --')
-        print(service_reservations_A + service_reservations_B)
+        print("=== SEEDING COMPLETE ===")
 
     except Exception as e:
-        print(e)
+        print("Error:", e)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

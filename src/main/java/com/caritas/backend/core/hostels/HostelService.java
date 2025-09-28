@@ -34,7 +34,7 @@ public class HostelService {
     }
 
     public HostelResponse createHostel(HostelRequest request) {
-        HostelEntity hostel = new HostelEntity(request.name(), request.description());
+        HostelEntity hostel = new HostelEntity(request.name(), request.description(), request.maxCapacity(), request.locationUrl(), request.imageUrls());
         HostelEntity saved = hostelRepository.save(hostel);
 
         return new HostelResponse(saved);
@@ -45,6 +45,9 @@ public class HostelService {
 
         hostel.setName(request.name());
         hostel.setDescription(request.description());
+        hostel.setMaxCapacity(request.maxCapacity());
+        hostel.setLocationUrl(request.locationUrl());
+        hostel.setImageUrls(request.imageUrls());
 
         HostelEntity updated = hostelRepository.save(hostel);
 
