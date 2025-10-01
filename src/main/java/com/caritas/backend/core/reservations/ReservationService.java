@@ -36,8 +36,7 @@ public class ReservationService {
     }
 
     public ReservationResponse getReservationById(UUID id) {
-        ReservationEntity reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+        ReservationEntity reservation = reservationRepository.findOneOrFail(id);
 
         return new ReservationResponse(reservation);
     }
@@ -46,20 +45,17 @@ public class ReservationService {
         UserEntity user = userRepository.findOneOrFail(request.userId());
         HostelEntity hostel = hostelRepository.findOneOrFail(request.hostelId());
 
-        ReservationEntity reservation = new ReservationEntity(user, hostel, request.startDate(), request.endDate(),
-                request.peopleCount());
+        ReservationEntity reservation = new ReservationEntity(user, hostel, request.startDate(), request.endDate());
         ReservationEntity saved = reservationRepository.save(reservation);
 
         return new ReservationResponse(saved, user.getId(), hostel.getId());
     }
 
     public ReservationResponse updateReservation(UUID id, ReservationRequest request) {
-        ReservationEntity reservation = reservationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Reservation not found"));
+        ReservationEntity reservation = reservationRepository.findOneOrFail(id);
 
         reservation.setStartDate(request.startDate());
         reservation.setEndDate(request.endDate());
-        reservation.setPeopleCount(request.peopleCount());
         reservation.setActive(request.active());
 
         ReservationEntity updated = reservationRepository.save(reservation);
@@ -68,9 +64,9 @@ public class ReservationService {
     }
 
     public void deleteReservation(UUID id) {
-        if (!reservationRepository.existsById(id)) {
-            throw new RuntimeException("Reservation not found");
-        }
+        ReservationEntity reservation = reservationRepository.findOneOrFail(id);
+
+        reservation.detach();
         reservationRepository.deleteById(id);
     }
 }

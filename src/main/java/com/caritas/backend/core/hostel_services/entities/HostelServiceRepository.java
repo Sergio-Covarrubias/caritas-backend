@@ -4,4 +4,9 @@ import java.util.UUID;
 
 import com.caritas.backend.common.BaseRepository;
 
-public interface HostelServiceRepository extends BaseRepository<HostelServiceEntity, UUID> {}
+public interface HostelServiceRepository extends BaseRepository<HostelServiceEntity, UUID> {
+    @Override
+    default String entityName() {
+        return "Hostel Service";
+    }
+}

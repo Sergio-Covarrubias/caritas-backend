@@ -1,7 +1,6 @@
 package com.caritas.backend.core.hostels;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,14 +35,11 @@ public class HostelController {
             @RequestParam(required = false) List<String> filters,
             @RequestParam String startDate,
             @RequestParam String endDate) {
-        if (filters == null) {
-            filters = List.of();
-        }
 
-        LocalDate start = LocalDate.parse(startDate, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-        LocalDate end = LocalDate.parse(endDate, DateTimeFormatter.ofPattern("yyyy/MM/dd"));
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
 
-        return hostelService.getPaginatedHostels(limit, page, filters, start, end);
+        return hostelService.getPaginatedHostels(filters, start, end, limit, page);
     }
 
     @GetMapping("/{id}")

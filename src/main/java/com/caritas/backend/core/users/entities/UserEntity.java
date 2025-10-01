@@ -2,6 +2,7 @@ package com.caritas.backend.core.users.entities;
 
 import java.util.List;
 
+import com.caritas.backend.core.persons.entities.PersonEntity;
 import com.caritas.backend.core.reservations.entities.ReservationEntity;
 
 import jakarta.persistence.*;
@@ -28,6 +29,9 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReservationEntity> reservations;
+    
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PersonEntity> persons;
 
     public UserEntity() {
     }
@@ -78,5 +82,9 @@ public class UserEntity {
 
     public List<ReservationEntity> getReservations() {
         return reservations;
+    }
+
+    public List<PersonEntity> getPersons() {
+        return persons;
     }
 }

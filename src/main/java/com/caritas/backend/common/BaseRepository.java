@@ -6,6 +6,8 @@ import org.springframework.data.repository.NoRepositoryBean;
 @NoRepositoryBean
 public interface BaseRepository<T, ID> extends JpaRepository<T, ID> {
     default T findOneOrFail(ID id) {
-        return findById(id).orElseThrow(() -> new RuntimeException("Item not found"));
+        return findById(id).orElseThrow(() -> new RuntimeException(entityName() + " not found"));
     }
+
+    String entityName();
 }
