@@ -26,21 +26,21 @@ public class UserService {
     }
 
     public UserResponse getUserById(String id) {
-        UserEntity user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        UserEntity user = userRepository.findOneOrFail(id);
 
         return new UserResponse(user);
     }
 
     public UserResponse createUser(UserRequest request) {
-        UserEntity user = new UserEntity(request.id(), request.firstName(), request.lastName(), request.email(), request.phoneNumber());
+        UserEntity user = new UserEntity(request.id(), request.firstName(), request.lastName(), request.email(),
+                request.phoneNumber());
         UserEntity saved = userRepository.save(user);
 
         return new UserResponse(saved);
     }
 
     public UserResponse updateUser(String id, UserRequest request) {
-        UserEntity user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        UserEntity user = userRepository.findOneOrFail(id);
 
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());

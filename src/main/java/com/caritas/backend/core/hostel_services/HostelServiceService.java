@@ -36,8 +36,7 @@ public class HostelServiceService {
     }
 
     public HostelServiceResponse getHostelServiceById(UUID id) {
-        HostelServiceEntity hostelService = hostelServiceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Hostel Service not found"));
+        HostelServiceEntity hostelService = hostelServiceRepository.findOneOrFail(id);
 
         return new HostelServiceResponse(hostelService);
     }
@@ -54,8 +53,7 @@ public class HostelServiceService {
     }
 
     public HostelServiceResponse updateHostelService(UUID id, HostelServiceRequest request) {
-        HostelServiceEntity hostelService = hostelServiceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Hostel Service not found"));
+        HostelServiceEntity hostelService = hostelServiceRepository.findOneOrFail(id);
 
         HostelServiceEntity updated = hostelServiceRepository.save(hostelService);
 
@@ -63,9 +61,9 @@ public class HostelServiceService {
     }
 
     public void deleteHostelService(UUID id) {
-        if (!hostelServiceRepository.existsById(id)) {
-            throw new RuntimeException("Hostel Service not found");
-        }
+        HostelServiceEntity hostelService = hostelServiceRepository.findOneOrFail(id);
+
+        hostelService.detach();
         hostelServiceRepository.deleteById(id);
     }
 }

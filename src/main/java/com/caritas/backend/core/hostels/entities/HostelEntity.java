@@ -1,9 +1,9 @@
 package com.caritas.backend.core.hostels.entities;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import com.caritas.backend.common.TextUtils;
 import com.caritas.backend.core.hostel_services.entities.HostelServiceEntity;
 import com.caritas.backend.core.reservations.entities.ReservationEntity;
 
@@ -87,21 +87,11 @@ public class HostelEntity {
     }
 
     public String[] getImageUrls() {
-        if (imageUrls.isEmpty()) {
-            return new String[0];
-        }
-        
-        return Arrays.stream(imageUrls.split(","))
-                     .map(String::trim)
-                     .toArray(String[]::new);
+        return TextUtils.StringToArray(imageUrls);
     }
 
     public void setImageUrls(String[] imageUrls) {
-        if (locationUrl.isEmpty()) {
-            this.imageUrls = "";
-        }
-        
-        this.imageUrls = String.join(",", imageUrls);
+        this.imageUrls = TextUtils.ArrayToString(imageUrls);
     }
 
     public List<ReservationEntity> getReservations() {

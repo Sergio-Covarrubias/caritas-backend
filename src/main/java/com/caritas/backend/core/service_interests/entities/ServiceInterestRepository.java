@@ -4,4 +4,9 @@ import java.util.UUID;
 
 import com.caritas.backend.common.BaseRepository;
 
-public interface ServiceInterestRepository extends BaseRepository<ServiceInterestEntity, UUID> {}
+public interface ServiceInterestRepository extends BaseRepository<ServiceInterestEntity, UUID> {
+    @Override
+    default String entityName() {
+        return "Service Interest";
+    }
+}

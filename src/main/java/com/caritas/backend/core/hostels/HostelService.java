@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.caritas.backend.core.hostels.dtos.HostelPaginationResponse;
@@ -24,29 +21,33 @@ public class HostelService {
         this.hostelRepository = hostelRepository;
     }
 
-    public List<HostelPaginationResponse> getPaginatedHostels(
-            int limit,
-            int page,
-            List<String> filters,
-            LocalDate startDate,
-            LocalDate endDate) {
-        Pageable pageable = PageRequest.of(page - 1, limit);
+    public List<HostelPaginationResponse> getPaginatedHostels(List<String> filters,
+            LocalDate startDate, LocalDate endDate, int limit, int page) {
+        List<HostelEntity> allHostels = hostelRepository.findAll();
 
-        Page<Object[]> results = hostelRepository.findPaginatedHostels(
-                startDate, endDate, filters, filters.size(), pageable);
+        List<HostelEntity> filtered = allHostels;
+        if (filters != null && !filters.isEmpty()) {
+            filtered = hostelRepository.filterHostelsByServices(allHostels, filters);
+        }
 
-        return results.stream()
+        if (filtered.isEmpty()) {
+            return List.of();
+        }
+
+        List<Object[]> availabilityRows = hostelRepository.calculateAvailabilityForHostels(filtered, startDate,
+                endDate);
+
+        return availabilityRows.stream()
                 .map(row -> {
                     HostelEntity hostel = (HostelEntity) row[0];
-                    Integer availableSpaces = ((Number) row[1]).intValue();
-                    return new HostelPaginationResponse(hostel, availableSpaces);
+                    Long available = (Long) row[1];
+                    return new HostelPaginationResponse(hostel, available.intValue());
                 })
-                .toList();
+                .skip(limit * (page - 1)).limit(limit).toList();
     }
 
     public HostelResponse getHostelById(UUID id) {
-        HostelEntity hostel = hostelRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Hostel not found"));
+        HostelEntity hostel = hostelRepository.findOneOrFail(id);
 
         return new HostelResponse(hostel);
     }
@@ -60,7 +61,7 @@ public class HostelService {
     }
 
     public HostelResponse updateHostel(UUID id, HostelRequest request) {
-        HostelEntity hostel = hostelRepository.findById(id).orElseThrow(() -> new RuntimeException("Hostel not found"));
+        HostelEntity hostel = hostelRepository.findOneOrFail(id);
 
         hostel.setName(request.name());
         hostel.setDescription(request.description());

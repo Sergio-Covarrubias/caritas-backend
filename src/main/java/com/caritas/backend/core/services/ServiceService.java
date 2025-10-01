@@ -27,8 +27,7 @@ public class ServiceService {
     }
 
     public ServiceResponse getServiceById(UUID id) {
-        ServiceEntity service = serviceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Service not found"));
+        ServiceEntity service = serviceRepository.findOneOrFail(id);
 
         return new ServiceResponse(service);
     }
@@ -41,8 +40,7 @@ public class ServiceService {
     }
 
     public ServiceResponse updateService(UUID id, ServiceRequest request) {
-        ServiceEntity service = serviceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Service not found"));
+        ServiceEntity service = serviceRepository.findOneOrFail(id);
 
         service.setPrice(request.price());
         service.setType(request.type());

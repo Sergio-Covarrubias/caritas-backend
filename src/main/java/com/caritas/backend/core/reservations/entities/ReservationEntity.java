@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.caritas.backend.core.hostels.entities.HostelEntity;
+import com.caritas.backend.core.person_reservations.entities.PersonReservationEntity;
 import com.caritas.backend.core.service_interests.entities.ServiceInterestEntity;
 import com.caritas.backend.core.service_reservations.entities.ServiceReservationEntity;
 import com.caritas.backend.core.users.entities.UserEntity;
@@ -34,9 +35,6 @@ public class ReservationEntity {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
-    @Column(name = "people_count", nullable = false)
-    private Integer peopleCount;
-
     @Column(name = "active", columnDefinition = "boolean default true", nullable = false)
     private Boolean active = true;
 
@@ -46,16 +44,17 @@ public class ReservationEntity {
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ServiceReservationEntity> serviceReservations;
 
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PersonReservationEntity> personReservations;
+
     public ReservationEntity() {
     }
 
-    public ReservationEntity(UserEntity user, HostelEntity hostel, LocalDate startDate, LocalDate endDate,
-            Integer peopleCount) {
+    public ReservationEntity(UserEntity user, HostelEntity hostel, LocalDate startDate, LocalDate endDate) {
         this.user = user;
         this.hostel = hostel;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.peopleCount = peopleCount;
     }
 
     public UUID getId() {
@@ -96,15 +95,7 @@ public class ReservationEntity {
     public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
-
-    public Integer getPeopleCount() {
-        return peopleCount;
-    }
-
-    public void setPeopleCount(Integer peopleCount) {
-        this.peopleCount = peopleCount;
-    }
-
+    
     public Boolean getActive() {
         return active;
     }
@@ -119,5 +110,9 @@ public class ReservationEntity {
 
     public List<ServiceReservationEntity> getServiceReservations() {
         return serviceReservations;
+    }
+
+    public List<PersonReservationEntity> getPersonReservations() {
+        return personReservations;
     }
 }

@@ -36,8 +36,7 @@ public class ServiceInterestService {
     }
 
     public ServiceInterestResponse getServiceInterestById(UUID id) {
-        ServiceInterestEntity serviceInterest = serviceInterestRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Service Interest not found"));
+        ServiceInterestEntity serviceInterest = serviceInterestRepository.findOneOrFail(id);
 
         return new ServiceInterestResponse(serviceInterest);
     }
@@ -53,8 +52,7 @@ public class ServiceInterestService {
     }
 
     public ServiceInterestResponse updateServiceInterest(UUID id, ServiceInterestRequest request) {
-        ServiceInterestEntity serviceInterest = serviceInterestRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Service Interest not found"));
+        ServiceInterestEntity serviceInterest = serviceInterestRepository.findOneOrFail(id);
 
         ServiceInterestEntity updated = serviceInterestRepository.save(serviceInterest);
 
@@ -62,9 +60,9 @@ public class ServiceInterestService {
     }
 
     public void deleteServiceInterest(UUID id) {
-        if (!serviceInterestRepository.existsById(id)) {
-            throw new RuntimeException("Service Interest not found");
-        }
+        ServiceInterestEntity serviceInterest = serviceInterestRepository.findOneOrFail(id);
+
+        serviceInterest.detach();
         serviceInterestRepository.deleteById(id);
     }
 }
