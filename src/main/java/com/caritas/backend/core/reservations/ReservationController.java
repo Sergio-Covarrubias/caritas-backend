@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.caritas.backend.core.reservations.dtos.CreateReservationRequest;
+import com.caritas.backend.core.reservations.dtos.CreateReservationResponse;
 import com.caritas.backend.core.reservations.dtos.ReservationRequest;
 import com.caritas.backend.core.reservations.dtos.ReservationResponse;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/reservations")
@@ -36,12 +40,12 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ReservationResponse createReservation(@RequestBody ReservationRequest request) {
+    public CreateReservationResponse createReservation(@Valid @RequestBody CreateReservationRequest request) {
         return reservationService.createReservation(request);
     }
 
     @PutMapping("/{id}")
-    public ReservationResponse updateReservation(@PathVariable UUID id, @RequestBody ReservationRequest request) {
+    public ReservationResponse updateReservation(@PathVariable UUID id, @Valid @RequestBody ReservationRequest request) {
         return reservationService.updateReservation(id, request);
     }
 

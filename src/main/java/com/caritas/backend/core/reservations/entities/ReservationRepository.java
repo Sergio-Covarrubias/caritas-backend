@@ -9,4 +9,6 @@ public interface ReservationRepository extends BaseRepository<ReservationEntity,
     default String entityName() {
         return "Reservation";
     }
+
+    boolean existsByUserIdAndActiveTrue(String userId);
 }
