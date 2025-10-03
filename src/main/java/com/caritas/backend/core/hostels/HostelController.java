@@ -1,5 +1,6 @@
 package com.caritas.backend.core.hostels;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,8 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.caritas.backend.core.hostels.dtos.HostelPaginationResponse;
 import com.caritas.backend.core.hostels.dtos.HostelRequest;
 import com.caritas.backend.core.hostels.dtos.HostelResponse;
 
@@ -26,8 +29,17 @@ public class HostelController {
     }
 
     @GetMapping
-    public List<HostelResponse> getAllHostels() {
-        return hostelService.getAllHostels();
+    public List<HostelPaginationResponse> getAvailableHostels(
+            @RequestParam(defaultValue = "5") int limit,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(required = false) List<String> filters,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        LocalDate start = LocalDate.parse(startDate);
+        LocalDate end = LocalDate.parse(endDate);
+
+        return hostelService.getPaginatedHostels(filters, start, end, limit, page);
     }
 
     @GetMapping("/{id}")

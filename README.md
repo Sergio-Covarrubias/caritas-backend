@@ -1,3 +1,21 @@
+**CONFIGURE THE ENV FILE**
+Before running the project, you need to create a ".env" file at the root of the project with the following variables for the databse:
+
+DB_NAME=<INSERT_DB_NAME>
+DB_USER=<INSERT_DB_USER>
+DB_PASSWORD=<INSERT_DB_PASSWORD>
+
+You can freely choose the values for these variables, as when you build the images for the first time (which you'll do in the next section) the database container will create a new database within a volume with the specified characteristics.
+
+If you need to change these values later, you'll need to delete the attached volume to recreate it, but that will delete all the data you currently have in the database.
+
+To delete the volume run these commands:
+1. List all volumes:
+docker volume ls
+
+2. Delete the database volume:
+docker volume rm <VOLUME_NAME>
+
 **HOW TO RUN THE BACKEND**
 
 1. When you download the project or pull changes from the repository you need to build the images:

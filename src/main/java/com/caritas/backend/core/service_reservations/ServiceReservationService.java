@@ -37,8 +37,7 @@ public class ServiceReservationService {
     }
 
     public ServiceReservationResponse getServiceReservationById(UUID id) {
-        ServiceReservationEntity serviceReservation = serviceReservationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Service Reservation not found"));
+        ServiceReservationEntity serviceReservation = serviceReservationRepository.findOneOrFail(id);
 
         return new ServiceReservationResponse(serviceReservation);
     }
@@ -54,8 +53,7 @@ public class ServiceReservationService {
     }
 
     public ServiceReservationResponse updateServiceReservation(UUID id, ServiceReservationRequest request) {
-        ServiceReservationEntity serviceReservation = serviceReservationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Service Reservation not found"));
+        ServiceReservationEntity serviceReservation = serviceReservationRepository.findOneOrFail(id);
 
         ServiceReservationEntity updated = serviceReservationRepository.save(serviceReservation);
 
@@ -63,9 +61,9 @@ public class ServiceReservationService {
     }
 
     public void deleteServiceReservation(UUID id) {
-        if (!serviceReservationRepository.existsById(id)) {
-            throw new RuntimeException("Service Reservation not found");
-        }
+        ServiceReservationEntity serviceReservation = serviceReservationRepository.findOneOrFail(id);
+
+        serviceReservation.detach();
         serviceReservationRepository.deleteById(id);
     }
 }

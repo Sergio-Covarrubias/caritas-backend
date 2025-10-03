@@ -4,4 +4,11 @@ import java.util.UUID;
 
 import com.caritas.backend.common.BaseRepository;
 
-public interface ReservationRepository extends BaseRepository<ReservationEntity, UUID> {}
+public interface ReservationRepository extends BaseRepository<ReservationEntity, UUID> {
+    @Override
+    default String entityName() {
+        return "Reservation";
+    }
+
+    boolean existsByUserIdAndActiveTrue(String userId);
+}

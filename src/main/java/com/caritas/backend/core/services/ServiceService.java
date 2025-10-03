@@ -27,24 +27,22 @@ public class ServiceService {
     }
 
     public ServiceResponse getServiceById(UUID id) {
-        ServiceEntity service = serviceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Service not found"));
+        ServiceEntity service = serviceRepository.findOneOrFail(id);
 
         return new ServiceResponse(service);
     }
 
     public ServiceResponse createService(ServiceRequest request) {
-        ServiceEntity service = new ServiceEntity(request.displayName(), request.type());
+        ServiceEntity service = new ServiceEntity(request.price(), request.type());
         ServiceEntity saved = serviceRepository.save(service);
 
         return new ServiceResponse(saved);
     }
 
     public ServiceResponse updateService(UUID id, ServiceRequest request) {
-        ServiceEntity service = serviceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Service not found"));
+        ServiceEntity service = serviceRepository.findOneOrFail(id);
 
-        service.setDisplayName(request.displayName());
+        service.setPrice(request.price());
         service.setType(request.type());
 
         ServiceEntity updated = serviceRepository.save(service);
