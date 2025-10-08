@@ -1,4 +1,4 @@
-# ~~~ Staging docker-compose.yml ~~~ #
+# ~~~ Dev docker-compose.yml ~~~ #
 
 services:
   database:
@@ -20,18 +20,16 @@ services:
   core:
     build:
       context: .
-      dockerfile: ./dockerfiles/core/Dockerfile-staging
+      dockerfile: ./dockerfiles/core/Dockerfile-dev
     container_name: core
     environment:
       DB_URL: jdbc:postgresql://database:5432/caritas_db
       BASE_PATH: /api
-      STAGE: prod
-      
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
+      STAGE: dev
     depends_on:
       - database
+    volumes:
+      - ./:/app
     ports:
       - "8081:8080"
     networks:

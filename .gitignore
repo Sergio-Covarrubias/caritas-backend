@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+*.pem
 *.env
 docker-compose.override.yml
 venv
