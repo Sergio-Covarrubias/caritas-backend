@@ -3,7 +3,7 @@ package com.caritas.backend.core.reservations.dtos;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record CreateReservationResponse(
+public record GetReservationResponse(
         UUID id,
         String userId,
         UUID hostelId,

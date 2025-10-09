@@ -10,12 +10,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caritas.backend.core.reservations.dtos.CreateReservationRequest;
 import com.caritas.backend.core.reservations.dtos.CreateReservationResponse;
+import com.caritas.backend.core.reservations.dtos.GetReservationResponse;
+import com.caritas.backend.core.reservations.dtos.RepeatReservationRequest;
 import com.caritas.backend.core.reservations.dtos.ReservationRequest;
 import com.caritas.backend.core.reservations.dtos.ReservationResponse;
+import com.caritas.backend.core.reservations.dtos.UserReservationsResponse;
 
 import jakarta.validation.Valid;
 
@@ -35,8 +39,16 @@ public class ReservationController {
     }
 
     @GetMapping("/{id}")
-    public ReservationResponse getReservationById(@PathVariable UUID id) {
+    public GetReservationResponse getReservationById(@PathVariable UUID id) {
         return reservationService.getReservationById(id);
+    }
+
+    @GetMapping("/user/{userId}")
+    public UserReservationsResponse getUserReservationHistory(
+            @PathVariable String userId,
+            @RequestParam(defaultValue = "5") int limit,
+            @RequestParam(defaultValue = "1") int page) {
+        return reservationService.getUserReservationHistory(userId, limit, page);
     }
 
     @PostMapping
@@ -44,8 +56,14 @@ public class ReservationController {
         return reservationService.createReservation(request);
     }
 
+    @PostMapping("/repeat/{id}")
+    public CreateReservationResponse repeatReservation(@Valid @RequestBody RepeatReservationRequest request) {
+        return reservationService.repeatReservation(request);
+    }
+
     @PutMapping("/{id}")
-    public ReservationResponse updateReservation(@PathVariable UUID id, @Valid @RequestBody ReservationRequest request) {
+    public ReservationResponse updateReservation(@PathVariable UUID id,
+            @Valid @RequestBody ReservationRequest request) {
         return reservationService.updateReservation(id, request);
     }
 

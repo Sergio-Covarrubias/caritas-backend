@@ -1,6 +1,7 @@
 package com.caritas.backend.core.reservations.entities;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -39,13 +40,13 @@ public class ReservationEntity {
     private Boolean active = true;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ServiceInterestEntity> serviceInterests;
+    private List<ServiceInterestEntity> serviceInterests = new ArrayList<>();
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ServiceReservationEntity> serviceReservations;
+    private List<ServiceReservationEntity> serviceReservations = new ArrayList<>();
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PersonReservationEntity> personReservations;
+    private List<PersonReservationEntity> personReservations = new ArrayList<>();
 
     public ReservationEntity() {
     }
