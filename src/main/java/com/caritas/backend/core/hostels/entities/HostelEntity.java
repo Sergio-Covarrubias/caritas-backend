@@ -1,5 +1,6 @@
 package com.caritas.backend.core.hostels.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,10 +35,10 @@ public class HostelEntity {
     private String imageUrls;
 
     @OneToMany(mappedBy = "hostel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReservationEntity> reservations;
+    private List<ReservationEntity> reservations = new ArrayList<>();
 
     @OneToMany(mappedBy = "hostel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HostelServiceEntity> hostelServices;
+    private List<HostelServiceEntity> hostelServices = new ArrayList<>();
 
     public HostelEntity() {
     }

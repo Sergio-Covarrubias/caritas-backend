@@ -63,6 +63,6 @@ public class ServiceInterestService {
         ServiceInterestEntity serviceInterest = serviceInterestRepository.findOneOrFail(id);
 
         serviceInterest.detach();
-        serviceInterestRepository.deleteById(id);
+        serviceInterestRepository.delete(serviceInterest);
     }
 }

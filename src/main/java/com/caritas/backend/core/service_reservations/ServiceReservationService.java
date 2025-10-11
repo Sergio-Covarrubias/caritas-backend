@@ -64,6 +64,6 @@ public class ServiceReservationService {
         ServiceReservationEntity serviceReservation = serviceReservationRepository.findOneOrFail(id);
 
         serviceReservation.detach();
-        serviceReservationRepository.deleteById(id);
+        serviceReservationRepository.delete(serviceReservation);
     }
 }

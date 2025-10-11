@@ -39,7 +39,7 @@ public class PersonService {
     public PersonResponse createPerson(PersonRequest request) {
         UserEntity user = this.userRepository.findOneOrFail(request.userId());
 
-        PersonEntity person = new PersonEntity(user, request.firstName(), request.lastName(), request.age(),
+        PersonEntity person = new PersonEntity(user, request.firstName(), request.lastName(), request.birthDate(),
                 request.alergies(), request.discapacities(), request.medicines());
 
         PersonEntity saved = personRepository.save(person);
@@ -52,7 +52,7 @@ public class PersonService {
 
         person.setFirstName(request.firstName());
         person.setLastName(request.lastName());
-        person.setAge(request.age());
+        person.setBirthDate(request.birthDate());
         person.setAlergies(request.alergies());
         person.setDiscapacities(request.discapacities());
         person.setMedicines(request.medicines());
@@ -66,6 +66,6 @@ public class PersonService {
         PersonEntity person = personRepository.findOneOrFail(id);
 
         person.detach();
-        personRepository.deleteById(id);
+        personRepository.delete(person);
     }
 }

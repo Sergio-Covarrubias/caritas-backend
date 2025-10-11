@@ -65,6 +65,6 @@ public class PersonReservationService {
         PersonReservationEntity personReservation = personReservationRepository.findOneOrFail(id);
 
         personReservation.detach();
-        personReservationRepository.deleteById(id);
+        personReservationRepository.delete(personReservation);
     }
 }

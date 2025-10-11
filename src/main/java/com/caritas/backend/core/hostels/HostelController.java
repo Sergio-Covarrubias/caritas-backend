@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.caritas.backend.core.hostels.dtos.HostelGetResponse;
 import com.caritas.backend.core.hostels.dtos.HostelPaginationResponse;
 import com.caritas.backend.core.hostels.dtos.HostelRequest;
 import com.caritas.backend.core.hostels.dtos.HostelResponse;
@@ -43,7 +44,7 @@ public class HostelController {
     }
 
     @GetMapping("/{id}")
-    public HostelResponse getHostelById(@PathVariable UUID id) {
+    public HostelGetResponse getHostelById(@PathVariable UUID id) {
         return hostelService.getHostelById(id);
     }
 

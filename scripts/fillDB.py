@@ -57,11 +57,16 @@ def create_users_with_persons(count=5):
 
         num_persons = random.randint(1, 3)
         for _ in range(num_persons):
+            # Generate a random birthdate between 1950 and 2022
+            start_birth = date(1950, 1, 1)
+            end_birth = date(2022, 12, 31)
+            birth_date = random_date(start_birth, end_birth)
+
             person_payload = {
                 "firstName": fake.first_name(),
                 "lastName": fake.last_name(),
                 "userId": uid,
-                "age": random.randint(1, 90),
+                "birthDate": birth_date.strftime("%Y-%m-%d"),
                 "alergies": [fake.word() for _ in range(random.randint(0, 3))],
                 "discapacities": [fake.word() for _ in range(random.randint(0, 3))],
                 "medicines": [fake.word() for _ in range(random.randint(0, 3))]
@@ -166,7 +171,12 @@ def create_reservations(users, persons_by_user, services, hostels):
         hostel_id = hostel["id"]
 
         start_date = random_date(start_limit, end_limit)
-        end_date = random_date(start_date, end_limit)
+
+        # 50% chance of having endDate = None
+        if random.random() < 0.5:
+            end_date = None
+        else:
+            end_date = random_date(start_date, end_limit)
 
         k = random.randint(1, min(5, len(services)))
         chosen_services = random.sample(services, k)
@@ -176,7 +186,7 @@ def create_reservations(users, persons_by_user, services, hostels):
             "userId": uid,
             "hostelId": hostel_id,
             "startDate": start_date.strftime("%Y-%m-%d"),
-            "endDate": end_date.strftime("%Y-%m-%d"),
+            "endDate": end_date.strftime("%Y-%m-%d") if end_date else None,
             "personIds": person_ids,
             "serviceIds": service_ids
         }
@@ -186,7 +196,7 @@ def create_reservations(users, persons_by_user, services, hostels):
         reservation_obj = r.json()
         reservation_id = reservation_obj.get("id") or reservation_obj.get("reservationId") or reservation_obj.get("uuid") or reservation_obj
         created_reservations.append(reservation_obj)
-        print(f"Created reservation {reservation_id} for user {uid} with {len(person_ids)} persons and {len(service_ids)} services")
+        print(f"Created reservation {reservation_id} for user {uid} with {len(person_ids)} persons and {len(service_ids)} services (endDate={end_date})")
 
     return created_reservations
 

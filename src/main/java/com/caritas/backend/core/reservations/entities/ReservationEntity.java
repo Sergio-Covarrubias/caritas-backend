@@ -33,11 +33,12 @@ public class ReservationEntity {
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "end_date", nullable = false)
+    @Column(name = "end_date")
     private LocalDate endDate;
 
-    @Column(name = "active", columnDefinition = "boolean default true", nullable = false)
-    private Boolean active = true;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false)
+    private ReservationState state = ReservationState.ACTIVE;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ServiceInterestEntity> serviceInterests = new ArrayList<>();
@@ -97,12 +98,12 @@ public class ReservationEntity {
         this.endDate = endDate;
     }
     
-    public Boolean getActive() {
-        return active;
+    public ReservationState getState() {
+        return state;
     }
 
-    public void setActive(Boolean active) {
-        this.active = active;
+    public void setState(ReservationState state) {
+        this.state = state;
     }
 
     public List<ServiceInterestEntity> getServiceInterests() {

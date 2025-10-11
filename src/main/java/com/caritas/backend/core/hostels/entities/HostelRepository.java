@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 import com.caritas.backend.common.BaseRepository;
 
+import com.caritas.backend.core.reservations.entities.ReservationState;
+
 public interface HostelRepository extends BaseRepository<HostelEntity, UUID> {
     @Override
     default String entityName() {
@@ -37,13 +39,14 @@ public interface HostelRepository extends BaseRepository<HostelEntity, UUID> {
         LEFT JOIN h.reservations r
         LEFT JOIN r.personReservations pr
         WHERE h IN :hostels
-          AND (r IS NULL OR (r.startDate <= :endDate AND r.endDate >= :startDate AND r.active = true))
+          AND (r IS NULL OR (r.startDate <= :endDate AND (r.endDate IS NULL OR r.endDate >= :startDate) AND r.state = :activeState))
         GROUP BY h
         ORDER BY availableSpaces DESC
     """)
     List<Object[]> calculateAvailabilityForHostels(
         @Param("hostels") List<HostelEntity> hostels,
         @Param("startDate") LocalDate startDate,
-        @Param("endDate") LocalDate endDate
+        @Param("endDate") LocalDate endDate,
+        @Param("activeState") ReservationState activeState
     );
 }

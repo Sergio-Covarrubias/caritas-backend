@@ -53,9 +53,7 @@ public class UserService {
     }
 
     public void deleteUser(String id) {
-        if (!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found");
-        }
-        userRepository.deleteById(id);
+        UserEntity user = userRepository.findOneOrFail(id);
+        userRepository.delete(user);
     }
 }

@@ -51,9 +51,7 @@ public class ServiceService {
     }
 
     public void deleteService(UUID id) {
-        if (!serviceRepository.existsById(id)) {
-            throw new RuntimeException("Service not found");
-        }
-        serviceRepository.deleteById(id);
+        ServiceEntity service = serviceRepository.findOneOrFail(id);
+        serviceRepository.delete(service);
     }
 }

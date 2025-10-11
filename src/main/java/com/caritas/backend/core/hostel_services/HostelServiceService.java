@@ -64,6 +64,6 @@ public class HostelServiceService {
         HostelServiceEntity hostelService = hostelServiceRepository.findOneOrFail(id);
 
         hostelService.detach();
-        hostelServiceRepository.deleteById(id);
+        hostelServiceRepository.delete(hostelService);
     }
 }

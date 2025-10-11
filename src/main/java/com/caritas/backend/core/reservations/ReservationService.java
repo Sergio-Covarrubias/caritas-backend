@@ -20,6 +20,7 @@ import com.caritas.backend.core.reservations.dtos.ReservationResponse;
 import com.caritas.backend.core.reservations.dtos.UserReservationsResponse;
 import com.caritas.backend.core.reservations.entities.ReservationEntity;
 import com.caritas.backend.core.reservations.entities.ReservationRepository;
+import com.caritas.backend.core.reservations.entities.ReservationState;
 import com.caritas.backend.core.service_interests.entities.ServiceInterestEntity;
 import com.caritas.backend.core.services.entities.ServiceEntity;
 import com.caritas.backend.core.services.entities.ServiceRepository;
@@ -65,20 +66,20 @@ public class ReservationService {
                 .toArray(UUID[]::new);
 
         return new GetReservationResponse(reservation.getId(), reservation.getUser().getId(),
-                reservation.getHostel().getId(), reservation.getStartDate(), reservation.getEndDate(), personIds,
+                reservation.getHostel().getId(), reservation.getStartDate(), reservation.getEndDate(), reservation.getState(), personIds,
                 serviceIds);
     }
 
     public UserReservationsResponse getUserReservationHistory(String userId, int limit, int page) {
         // Get the active reservation if it exists
-        Optional<ReservationEntity> activeReservationOpt = reservationRepository.findByUserIdAndActiveTrue(userId);
+        Optional<ReservationEntity> activeReservationOpt = reservationRepository.findByUserIdAndState(userId, ReservationState.ACTIVE);
         UserReservationsResponse.UserReservation activeReservation = activeReservationOpt
                 .map(UserReservationsResponse.UserReservation::new)
                 .orElse(null);
 
         // Get the previous reservations
         List<UserReservationsResponse.UserReservation> previousReservations = reservationRepository
-                .findAllByUserIdAndActiveFalse(userId)
+                .findAllByUserIdAndStateNot(userId, ReservationState.ACTIVE)
                 .stream()
                 .map(UserReservationsResponse.UserReservation::new)
                 .skip(limit * (page - 1)).limit(limit).toList();
@@ -88,7 +89,7 @@ public class ReservationService {
 
     @Transactional
     public CreateReservationResponse createReservation(CreateReservationRequest request) {
-        boolean hasActiveReservation = reservationRepository.existsByUserIdAndActiveTrue(request.userId());
+        boolean hasActiveReservation = reservationRepository.existsByUserIdAndState(request.userId(), ReservationState.ACTIVE);
         if (hasActiveReservation) {
             throw new IllegalStateException("User already has an active reservation");
         }
@@ -111,7 +112,7 @@ public class ReservationService {
         this.reservationRepository.save(reservation);
 
         return new CreateReservationResponse(reservation.getId(), user.getId(), hostel.getId(),
-                reservation.getStartDate(), reservation.getEndDate(), request.personIds(), request.serviceIds());
+                reservation.getStartDate(), reservation.getEndDate(), reservation.getState(), request.personIds(), request.serviceIds());
     }
 
     public CreateReservationResponse repeatReservation(RepeatReservationRequest request) {
@@ -135,7 +136,7 @@ public class ReservationService {
 
         reservation.setStartDate(request.startDate());
         reservation.setEndDate(request.endDate());
-        reservation.setActive(request.active());
+        reservation.setState(request.state());
 
         ReservationEntity updated = reservationRepository.save(reservation);
 
@@ -146,6 +147,6 @@ public class ReservationService {
         ReservationEntity reservation = reservationRepository.findOneOrFail(id);
 
         reservation.detach();
-        reservationRepository.deleteById(id);
+        reservationRepository.delete(reservation);
     }
 }

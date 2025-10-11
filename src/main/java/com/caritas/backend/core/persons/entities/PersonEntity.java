@@ -1,5 +1,7 @@
 package com.caritas.backend.core.persons.entities;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,8 +30,8 @@ public class PersonEntity {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "age", nullable = false)
-    private Integer age;
+    @Column(name = "birth_date", nullable = false)
+    private LocalDate birthDate;
 
     @Column(name = "alergies", columnDefinition = "TEXT", nullable = false)
     private String alergies;
@@ -41,18 +43,18 @@ public class PersonEntity {
     private String medicines;
 
     @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PersonReservationEntity> personReservations;
+    private List<PersonReservationEntity> personReservations = new ArrayList<>();
 
     public PersonEntity() {
     }
 
-    public PersonEntity(UserEntity user, String firstName, String lastName, Integer age, String[] alergies,
+    public PersonEntity(UserEntity user, String firstName, String lastName, LocalDate birthdate, String[] alergies,
             String[] discapacities,
             String[] medicines) {
         this.user = user;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.age = age;
+        this.birthDate = birthdate;
         setAlergies(alergies);
         setDiscapacities(discapacities);
         setMedicines(medicines);
@@ -82,12 +84,12 @@ public class PersonEntity {
         this.lastName = lastName;
     }
 
-    public Integer getAge() {
-        return age;
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
-    public void setAge(Integer age) {
-        this.age = age;
+    public void setBirthDate(LocalDate birthdate) {
+        this.birthDate = birthdate;
     }
 
     public String[] getAlergies() {

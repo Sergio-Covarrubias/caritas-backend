@@ -1,5 +1,6 @@
 package com.caritas.backend.core.users.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.caritas.backend.core.persons.entities.PersonEntity;
@@ -28,10 +29,10 @@ public class UserEntity {
     private String phoneNumber;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ReservationEntity> reservations;
+    private List<ReservationEntity> reservations = new ArrayList<>();
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PersonEntity> persons;
+    private List<PersonEntity> persons = new ArrayList<>();
 
     public UserEntity() {
     }

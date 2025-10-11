@@ -6,11 +6,14 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.caritas.backend.core.hostel_services.entities.HostelServiceEntity;
+import com.caritas.backend.core.hostels.dtos.HostelGetResponse;
 import com.caritas.backend.core.hostels.dtos.HostelPaginationResponse;
 import com.caritas.backend.core.hostels.dtos.HostelRequest;
 import com.caritas.backend.core.hostels.dtos.HostelResponse;
 import com.caritas.backend.core.hostels.entities.HostelEntity;
 import com.caritas.backend.core.hostels.entities.HostelRepository;
+import com.caritas.backend.core.reservations.entities.ReservationState;
 
 @Service
 public class HostelService {
@@ -35,7 +38,7 @@ public class HostelService {
         }
 
         List<Object[]> availabilityRows = hostelRepository.calculateAvailabilityForHostels(filtered, startDate,
-                endDate);
+                endDate, ReservationState.ACTIVE);
 
         return availabilityRows.stream()
                 .map(row -> {
@@ -46,10 +49,15 @@ public class HostelService {
                 .skip(limit * (page - 1)).limit(limit).toList();
     }
 
-    public HostelResponse getHostelById(UUID id) {
+    public HostelGetResponse getHostelById(UUID id) {
         HostelEntity hostel = hostelRepository.findOneOrFail(id);
 
-        return new HostelResponse(hostel);
+        HostelGetResponse.Service[] services = hostel.getHostelServices().stream()
+                .map(HostelServiceEntity::getService)
+                .map(s -> new HostelGetResponse.Service(s.getId(), s.getPrice(), s.getType()))
+                .toArray(HostelGetResponse.Service[]::new);
+
+        return new HostelGetResponse(hostel, services);
     }
 
     public HostelResponse createHostel(HostelRequest request) {
@@ -75,9 +83,7 @@ public class HostelService {
     }
 
     public void deleteHostel(UUID id) {
-        if (!hostelRepository.existsById(id)) {
-            throw new RuntimeException("Hostel not found");
-        }
-        hostelRepository.deleteById(id);
+        HostelEntity hostel = hostelRepository.findOneOrFail(id);
+        hostelRepository.delete(hostel);
     }
 }
