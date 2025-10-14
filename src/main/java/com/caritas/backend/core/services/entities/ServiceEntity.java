@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.caritas.backend.core.hostel_services.entities.HostelServiceEntity;
-import com.caritas.backend.core.service_interests.entities.ServiceInterestEntity;
 import com.caritas.backend.core.service_reservations.entities.ServiceReservationEntity;
 
 import jakarta.persistence.*;
@@ -27,9 +26,6 @@ public class ServiceEntity {
 
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HostelServiceEntity> hostelServices = new ArrayList<>();
-
-    @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ServiceInterestEntity> serviceInterests = new ArrayList<>();
 
     @OneToMany(mappedBy = "service", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ServiceReservationEntity> serviceReservations = new ArrayList<>();
@@ -65,11 +61,7 @@ public class ServiceEntity {
     public List<HostelServiceEntity> getHostelServices() {
         return hostelServices;
     }
-
-    public List<ServiceInterestEntity> getServiceInterests() {
-        return serviceInterests;
-    }
-
+    
     public List<ServiceReservationEntity> getServiceReservations() {
         return serviceReservations;
     }

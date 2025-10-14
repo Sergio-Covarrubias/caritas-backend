@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caritas.backend.core.services.dtos.ServiceRequest;
-import com.caritas.backend.core.services.dtos.ServiceResponse;
+import com.caritas.backend.core.services.dtos.ServiceSerialized;
 
 @RestController
 @RequestMapping("/services")
@@ -26,22 +26,22 @@ public class ServiceController {
     }
 
     @GetMapping
-    public List<ServiceResponse> getAllServices() {
+    public List<ServiceSerialized> getAllServices() {
         return serviceService.getAllServices();
     }
 
     @GetMapping("/{id}")
-    public ServiceResponse getServiceById(@PathVariable UUID id) {
+    public ServiceSerialized getServiceById(@PathVariable UUID id) {
         return serviceService.getServiceById(id);
     }
 
     @PostMapping
-    public ServiceResponse createService(@RequestBody ServiceRequest request) {
+    public ServiceSerialized createService(@RequestBody ServiceRequest request) {
         return serviceService.createService(request);
     }
 
     @PutMapping("/{id}")
-    public ServiceResponse updateService(@PathVariable UUID id, @RequestBody ServiceRequest request) {
+    public ServiceSerialized updateService(@PathVariable UUID id, @RequestBody ServiceRequest request) {
         return serviceService.updateService(id, request);
     }
 

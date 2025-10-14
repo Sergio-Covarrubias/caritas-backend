@@ -1,16 +1,11 @@
 package com.caritas.backend.core.reservations.dtos;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.caritas.backend.core.reservations.entities.ReservationState;
 
 public record UpdateReservationRequest(
-        @NotBlank String userId,
-        UUID hostelId,
         LocalDate startDate,
         LocalDate endDate,
-        @Size(min = 1) UUID[] personIds,
-        UUID[] serviceIds) {
+        ReservationState state) {
 }

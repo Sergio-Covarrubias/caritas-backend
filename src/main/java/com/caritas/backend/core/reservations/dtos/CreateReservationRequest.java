@@ -12,6 +12,5 @@ public record CreateReservationRequest(
         @NonNull UUID hostelId,
         @NonNull LocalDate startDate,
         @NonNull LocalDate endDate,
-        @NotEmpty UUID[] personIds,
-        @NonNull UUID[] serviceIds) {
+        @NotEmpty UUID[] personIds) {
 }

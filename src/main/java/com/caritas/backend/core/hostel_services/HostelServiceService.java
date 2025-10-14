@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.caritas.backend.core.hostel_services.dtos.HostelServiceRequest;
-import com.caritas.backend.core.hostel_services.dtos.HostelServiceResponse;
+import com.caritas.backend.core.hostel_services.dtos.HostelServiceSerialized;
 import com.caritas.backend.core.hostel_services.entities.HostelServiceEntity;
 import com.caritas.backend.core.hostel_services.entities.HostelServiceRepository;
 import com.caritas.backend.core.hostels.entities.HostelEntity;
@@ -28,36 +28,35 @@ public class HostelServiceService {
         this.hostelRepository = hostelRepository;
     }
 
-    public List<HostelServiceResponse> getAllHostelServices() {
+    public List<HostelServiceSerialized> getAllHostelServices() {
         return hostelServiceRepository.findAll()
                 .stream()
-                .map(hostelService -> new HostelServiceResponse(hostelService))
+                .map(hostelService -> new HostelServiceSerialized(hostelService, hostelService.getHostel(), hostelService.getService()))
                 .toList();
     }
 
-    public HostelServiceResponse getHostelServiceById(UUID id) {
+    public HostelServiceSerialized getHostelServiceById(UUID id) {
         HostelServiceEntity hostelService = hostelServiceRepository.findOneOrFail(id);
 
-        return new HostelServiceResponse(hostelService);
+        return new HostelServiceSerialized(hostelService, hostelService.getHostel(), hostelService.getService());
     }
 
-    public HostelServiceResponse createHostelService(HostelServiceRequest request) {
+    public HostelServiceSerialized createHostelService(HostelServiceRequest request) {
         HostelEntity hostel = hostelRepository.findOneOrFail(request.hostelId());
         ServiceEntity service = serviceRepository.findOneOrFail(request.serviceId());
 
         HostelServiceEntity hostelService = new HostelServiceEntity(hostel, service);
-
         HostelServiceEntity saved = hostelServiceRepository.save(hostelService);
 
-        return new HostelServiceResponse(saved, hostel.getId(), service.getId());
+        return new HostelServiceSerialized(saved, hostel, service);
     }
 
-    public HostelServiceResponse updateHostelService(UUID id, HostelServiceRequest request) {
+    public HostelServiceSerialized updateHostelService(UUID id, HostelServiceRequest request) {
         HostelServiceEntity hostelService = hostelServiceRepository.findOneOrFail(id);
 
         HostelServiceEntity updated = hostelServiceRepository.save(hostelService);
 
-        return new HostelServiceResponse(updated);
+        return new HostelServiceSerialized(updated, updated.getHostel(), updated.getService());
     }
 
     public void deleteHostelService(UUID id) {

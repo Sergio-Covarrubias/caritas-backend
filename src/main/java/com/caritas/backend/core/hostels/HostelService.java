@@ -6,11 +6,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.caritas.backend.core.hostel_services.entities.HostelServiceEntity;
-import com.caritas.backend.core.hostels.dtos.HostelGetResponse;
 import com.caritas.backend.core.hostels.dtos.HostelPaginationResponse;
 import com.caritas.backend.core.hostels.dtos.HostelRequest;
-import com.caritas.backend.core.hostels.dtos.HostelResponse;
+import com.caritas.backend.core.hostels.dtos.HostelSerialized;
 import com.caritas.backend.core.hostels.entities.HostelEntity;
 import com.caritas.backend.core.hostels.entities.HostelRepository;
 import com.caritas.backend.core.reservations.entities.ReservationState;
@@ -49,26 +47,21 @@ public class HostelService {
                 .skip(limit * (page - 1)).limit(limit).toList();
     }
 
-    public HostelGetResponse getHostelById(UUID id) {
+    public HostelSerialized getHostelById(UUID id) {
         HostelEntity hostel = hostelRepository.findOneOrFail(id);
 
-        HostelGetResponse.Service[] services = hostel.getHostelServices().stream()
-                .map(HostelServiceEntity::getService)
-                .map(s -> new HostelGetResponse.Service(s.getId(), s.getPrice(), s.getType()))
-                .toArray(HostelGetResponse.Service[]::new);
-
-        return new HostelGetResponse(hostel, services);
+        return new HostelSerialized(hostel, hostel.getHostelServices(), null);
     }
 
-    public HostelResponse createHostel(HostelRequest request) {
+    public HostelSerialized createHostel(HostelRequest request) {
         HostelEntity hostel = new HostelEntity(request.name(), request.description(), request.maxCapacity(),
                 request.locationUrl(), request.imageUrls());
         HostelEntity saved = hostelRepository.save(hostel);
 
-        return new HostelResponse(saved);
+        return new HostelSerialized(saved, null, null);
     }
 
-    public HostelResponse updateHostel(UUID id, HostelRequest request) {
+    public HostelSerialized updateHostel(UUID id, HostelRequest request) {
         HostelEntity hostel = hostelRepository.findOneOrFail(id);
 
         hostel.setName(request.name());
@@ -79,7 +72,7 @@ public class HostelService {
 
         HostelEntity updated = hostelRepository.save(hostel);
 
-        return new HostelResponse(updated);
+        return new HostelSerialized(updated, null, null);
     }
 
     public void deleteHostel(UUID id) {

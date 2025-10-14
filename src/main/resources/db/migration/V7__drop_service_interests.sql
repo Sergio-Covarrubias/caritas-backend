@@ -1,0 +1,3 @@
+alter table service_interests drop constraint FK7jjwopw9vgpx6xpmplr5rnttc;
+alter table service_interests drop constraint FK384u254gq0csapt23a21k7474;
+drop table service_interests;

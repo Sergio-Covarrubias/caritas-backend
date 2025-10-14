@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.caritas.backend.core.persons.dtos.PersonRequest;
-import com.caritas.backend.core.persons.dtos.PersonResponse;
+import com.caritas.backend.core.persons.dtos.PersonSerialized;
 import com.caritas.backend.core.persons.entities.PersonEntity;
 import com.caritas.backend.core.persons.entities.PersonRepository;
 import com.caritas.backend.core.users.entities.UserEntity;
@@ -23,31 +23,31 @@ public class PersonService {
         this.userRepository = userRepository;
     }
 
-    public List<PersonResponse> getAllPersons() {
+    public List<PersonSerialized> getAllPersons() {
         return personRepository.findAll()
                 .stream()
-                .map(person -> new PersonResponse(person))
+                .map(person -> new PersonSerialized(person, person.getUser()))
                 .toList();
     }
 
-    public PersonResponse getPersonById(UUID id) {
+    public PersonSerialized getPersonById(UUID id) {
         PersonEntity person = personRepository.findOneOrFail(id);
 
-        return new PersonResponse(person);
+        return new PersonSerialized(person, person.getUser());
     }
 
-    public PersonResponse createPerson(PersonRequest request) {
+    public PersonSerialized createPerson(PersonRequest request) {
         UserEntity user = this.userRepository.findOneOrFail(request.userId());
 
         PersonEntity person = new PersonEntity(user, request.firstName(), request.lastName(), request.birthDate(),
                 request.alergies(), request.discapacities(), request.medicines());
-
+        
         PersonEntity saved = personRepository.save(person);
 
-        return new PersonResponse(saved, user.getId());
+        return new PersonSerialized(saved, person.getUser());
     }
 
-    public PersonResponse updatePerson(UUID id, PersonRequest request) {
+    public PersonSerialized updatePerson(UUID id, PersonRequest request) {
         PersonEntity person = personRepository.findOneOrFail(id);
 
         person.setFirstName(request.firstName());
@@ -59,7 +59,7 @@ public class PersonService {
 
         PersonEntity updated = personRepository.save(person);
 
-        return new PersonResponse(updated);
+        return new PersonSerialized(updated, person.getUser());
     }
 
     public void deletePerson(UUID id) {

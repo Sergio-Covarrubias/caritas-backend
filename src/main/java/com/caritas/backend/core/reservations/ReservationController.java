@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caritas.backend.core.reservations.dtos.CreateReservationRequest;
-import com.caritas.backend.core.reservations.dtos.CreateReservationResponse;
-import com.caritas.backend.core.reservations.dtos.GetReservationResponse;
+import com.caritas.backend.core.reservations.dtos.GetReservationsDashboard;
 import com.caritas.backend.core.reservations.dtos.RepeatReservationRequest;
 import com.caritas.backend.core.reservations.dtos.ReservationRequest;
-import com.caritas.backend.core.reservations.dtos.ReservationResponse;
+import com.caritas.backend.core.reservations.dtos.ReservationSerialized;
 import com.caritas.backend.core.reservations.dtos.UserReservationsResponse;
 
 import jakarta.validation.Valid;
@@ -34,12 +33,12 @@ public class ReservationController {
     }
 
     @GetMapping
-    public List<ReservationResponse> getAllReservations() {
+    public List<ReservationSerialized> getAllReservations() {
         return reservationService.getAllReservations();
     }
 
     @GetMapping("/{id}")
-    public GetReservationResponse getReservationById(@PathVariable UUID id) {
+    public ReservationSerialized getReservationById(@PathVariable UUID id) {
         return reservationService.getReservationById(id);
     }
 
@@ -51,18 +50,23 @@ public class ReservationController {
         return reservationService.getUserReservationHistory(userId, limit, page);
     }
 
+    @GetMapping("/dashboard")
+    public GetReservationsDashboard getReservationsDashboard() {
+        return reservationService.getReservationsDashboard();
+    }
+
     @PostMapping
-    public CreateReservationResponse createReservation(@Valid @RequestBody CreateReservationRequest request) {
+    public ReservationSerialized createReservation(@Valid @RequestBody CreateReservationRequest request) {
         return reservationService.createReservation(request);
     }
 
     @PostMapping("/repeat/{id}")
-    public CreateReservationResponse repeatReservation(@Valid @RequestBody RepeatReservationRequest request) {
+    public ReservationSerialized repeatReservation(@Valid @RequestBody RepeatReservationRequest request) {
         return reservationService.repeatReservation(request);
     }
 
     @PutMapping("/{id}")
-    public ReservationResponse updateReservation(@PathVariable UUID id,
+    public ReservationSerialized updateReservation(@PathVariable UUID id,
             @Valid @RequestBody ReservationRequest request) {
         return reservationService.updateReservation(id, request);
     }

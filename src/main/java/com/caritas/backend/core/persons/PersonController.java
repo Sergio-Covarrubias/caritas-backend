@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caritas.backend.core.persons.dtos.PersonRequest;
-import com.caritas.backend.core.persons.dtos.PersonResponse;
+import com.caritas.backend.core.persons.dtos.PersonSerialized;
 
 @RestController
 @RequestMapping("/persons")
@@ -26,22 +26,22 @@ public class PersonController {
     }
 
     @GetMapping
-    public List<PersonResponse> getAllPersons() {
+    public List<PersonSerialized> getAllPersons() {
         return personService.getAllPersons();
     }
 
     @GetMapping("/{id}")
-    public PersonResponse getPersonById(@PathVariable UUID id) {
+    public PersonSerialized getPersonById(@PathVariable UUID id) {
         return personService.getPersonById(id);
     }
 
     @PostMapping
-    public PersonResponse createPerson(@RequestBody PersonRequest request) {
+    public PersonSerialized createPerson(@RequestBody PersonRequest request) {
         return personService.createPerson(request);
     }
 
     @PutMapping("/{id}")
-    public PersonResponse updatePerson(@PathVariable UUID id, @RequestBody PersonRequest request) {
+    public PersonSerialized updatePerson(@PathVariable UUID id, @RequestBody PersonRequest request) {
         return personService.updatePerson(id, request);
     }
 

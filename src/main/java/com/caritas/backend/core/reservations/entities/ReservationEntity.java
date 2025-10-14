@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import com.caritas.backend.core.hostels.entities.HostelEntity;
 import com.caritas.backend.core.person_reservations.entities.PersonReservationEntity;
-import com.caritas.backend.core.service_interests.entities.ServiceInterestEntity;
 import com.caritas.backend.core.service_reservations.entities.ServiceReservationEntity;
 import com.caritas.backend.core.users.entities.UserEntity;
 
@@ -39,9 +38,6 @@ public class ReservationEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
     private ReservationState state = ReservationState.ACTIVE;
-
-    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ServiceInterestEntity> serviceInterests = new ArrayList<>();
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ServiceReservationEntity> serviceReservations = new ArrayList<>();
@@ -104,10 +100,6 @@ public class ReservationEntity {
 
     public void setState(ReservationState state) {
         this.state = state;
-    }
-
-    public List<ServiceInterestEntity> getServiceInterests() {
-        return serviceInterests;
     }
 
     public List<ServiceReservationEntity> getServiceReservations() {

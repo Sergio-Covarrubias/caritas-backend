@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caritas.backend.core.users.dtos.UserRequest;
-import com.caritas.backend.core.users.dtos.UserResponse;
+import com.caritas.backend.core.users.dtos.UserSerialized;
 
 @RestController
 @RequestMapping("/users")
@@ -25,22 +25,22 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponse> getAllUsers() {
+    public List<UserSerialized> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public UserResponse getUserById(@PathVariable String id) {
+    public UserSerialized getUserById(@PathVariable String id) {
         return userService.getUserById(id);
     }
 
     @PostMapping
-    public UserResponse createUser(@RequestBody UserRequest request) {
+    public UserSerialized createUser(@RequestBody UserRequest request) {
         return userService.createUser(request);
     }
 
     @PutMapping("/{id}")
-    public UserResponse updateUser(@PathVariable String id, @RequestBody UserRequest request) {
+    public UserSerialized updateUser(@PathVariable String id, @RequestBody UserRequest request) {
         return userService.updateUser(id, request);
     }
 

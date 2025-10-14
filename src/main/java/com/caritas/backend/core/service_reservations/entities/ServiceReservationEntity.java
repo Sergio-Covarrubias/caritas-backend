@@ -1,5 +1,6 @@
 package com.caritas.backend.core.service_reservations.entities;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import com.caritas.backend.core.reservations.entities.ReservationEntity;
@@ -23,15 +24,28 @@ public class ServiceReservationEntity {
     @JoinColumn(name = "service_id", nullable = false)
     private ServiceEntity service;
 
+    @Column(name = "order_date", nullable = false)
+    private LocalDate orderDate;
+
+    @Column(name = "cost_count")
+    private Integer costCount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "state", nullable = false)
+    private ServiceReservationState state = ServiceReservationState.PENDING;
+
     @Column(name = "external_reservation_id", nullable = false)
     private String externalReservationId;
 
     public ServiceReservationEntity() {
     }
 
-    public ServiceReservationEntity(ReservationEntity reservation, ServiceEntity service, String externalReservationId) {
+    public ServiceReservationEntity(ReservationEntity reservation, ServiceEntity service, LocalDate orderDate, Integer costCount, ServiceReservationState state, String externalReservationId) {
         this.reservation = reservation;
         this.service = service;
+        this.orderDate = orderDate;
+        this.costCount = costCount;
+        this.state = state;
         this.externalReservationId = externalReservationId;
     }
 
@@ -45,6 +59,30 @@ public class ServiceReservationEntity {
 
     public ServiceEntity getService() {
         return service;
+    }
+
+    public LocalDate getOrderDate() {
+        return orderDate;
+    }
+
+    public void setOrderDate(LocalDate orderDate) {
+        this.orderDate = orderDate;
+    }
+
+    public Integer getCostCount() {
+        return costCount;
+    }
+
+    public void setCostCount(Integer costCount) {
+        this.costCount = costCount;
+    }
+
+    public ServiceReservationState getState() {
+        return state;
+    }
+
+    public void setState(ServiceReservationState state) {
+        this.state = state;
     }
 
     public String getExternalReservationId() {

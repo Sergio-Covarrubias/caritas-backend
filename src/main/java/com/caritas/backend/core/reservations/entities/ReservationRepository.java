@@ -12,6 +12,8 @@ public interface ReservationRepository extends BaseRepository<ReservationEntity,
         return "Reservation";
     }
 
+    List<ReservationEntity> findAllByState(ReservationState state);
+
     boolean existsByUserIdAndState(String userId, ReservationState state);
 
     Optional<ReservationEntity> findByUserIdAndState(String userId, ReservationState state);

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caritas.backend.core.service_reservations.dtos.ServiceReservationRequest;
-import com.caritas.backend.core.service_reservations.dtos.ServiceReservationResponse;
+import com.caritas.backend.core.service_reservations.dtos.ServiceReservationSerialized;
 
 @RestController
 @RequestMapping("/service-reservations")
@@ -26,22 +26,22 @@ public class ServiceReservationController {
     }
 
     @GetMapping
-    public List<ServiceReservationResponse> getAllServiceReservations() {
+    public List<ServiceReservationSerialized> getAllServiceReservations() {
         return serviceReservationService.getAllServiceReservations();
     }
 
     @GetMapping("/{id}")
-    public ServiceReservationResponse getServiceReservationById(@PathVariable UUID id) {
+    public ServiceReservationSerialized getServiceReservationById(@PathVariable UUID id) {
         return serviceReservationService.getServiceReservationById(id);
     }
 
     @PostMapping
-    public ServiceReservationResponse createServiceReservation(@RequestBody ServiceReservationRequest request) {
+    public ServiceReservationSerialized createServiceReservation(@RequestBody ServiceReservationRequest request) {
         return serviceReservationService.createServiceReservation(request);
     }
 
     @PutMapping("/{id}")
-    public ServiceReservationResponse updateServiceReservation(@PathVariable UUID id, @RequestBody ServiceReservationRequest request) {
+    public ServiceReservationSerialized updateServiceReservation(@PathVariable UUID id, @RequestBody ServiceReservationRequest request) {
         return serviceReservationService.updateServiceReservation(id, request);
     }
 

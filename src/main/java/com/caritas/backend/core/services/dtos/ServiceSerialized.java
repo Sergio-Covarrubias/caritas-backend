@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import com.caritas.backend.core.services.entities.ServiceEntity;
 
-public record ServiceResponse(UUID id, Float price, String type) {
-    public ServiceResponse(ServiceEntity service) {
+public record ServiceSerialized(UUID id, Float price, String type) {
+    public ServiceSerialized(ServiceEntity service) {
         this(service.getId(), service.getPrice(), service.getType());
     }
 }

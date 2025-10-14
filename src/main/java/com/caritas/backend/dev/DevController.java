@@ -9,7 +9,6 @@ import com.caritas.backend.core.hostels.entities.HostelRepository;
 import com.caritas.backend.core.person_reservations.entities.PersonReservationRepository;
 import com.caritas.backend.core.persons.entities.PersonRepository;
 import com.caritas.backend.core.reservations.entities.ReservationRepository;
-import com.caritas.backend.core.service_interests.entities.ServiceInterestRepository;
 import com.caritas.backend.core.service_reservations.entities.ServiceReservationRepository;
 import com.caritas.backend.core.services.entities.ServiceRepository;
 import com.caritas.backend.core.users.entities.UserRepository;
@@ -25,13 +24,12 @@ public class DevController {
     private final HostelServiceRepository hostelServiceRepository;
     private final ReservationRepository reservationRepository;
     private final PersonReservationRepository personReservationRepository;
-    private final ServiceInterestRepository serviceInterestRepository;
     private final ServiceReservationRepository serviceReservationRepository;
 
     public DevController(UserRepository userRepository, PersonRepository personRepository, ServiceRepository serviceRepository,
             HostelRepository hostelRepository, HostelServiceRepository hostelServiceRepository, 
             ReservationRepository reservationRepository, PersonReservationRepository personReservationRepository,
-            ServiceInterestRepository serviceInterestRepository, ServiceReservationRepository serviceReservationRepository) {
+            ServiceReservationRepository serviceReservationRepository) {
         this.userRepository = userRepository;
         this.personRepository = personRepository;
         this.serviceRepository = serviceRepository;
@@ -39,14 +37,12 @@ public class DevController {
         this.hostelServiceRepository = hostelServiceRepository;
         this.reservationRepository = reservationRepository;
         this.personReservationRepository = personReservationRepository;
-        this.serviceInterestRepository = serviceInterestRepository;
         this.serviceReservationRepository = serviceReservationRepository;
     }
 
     @PostMapping("/wipe")
     public void wipeData() {
         serviceReservationRepository.deleteAll();
-        serviceInterestRepository.deleteAll();
         personReservationRepository.deleteAll();
         reservationRepository.deleteAll();
         hostelServiceRepository.deleteAll();

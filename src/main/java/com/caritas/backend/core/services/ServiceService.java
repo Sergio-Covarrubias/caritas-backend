@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.caritas.backend.core.services.dtos.ServiceRequest;
-import com.caritas.backend.core.services.dtos.ServiceResponse;
+import com.caritas.backend.core.services.dtos.ServiceSerialized;
 import com.caritas.backend.core.services.entities.ServiceEntity;
 import com.caritas.backend.core.services.entities.ServiceRepository;
 
@@ -19,27 +19,27 @@ public class ServiceService {
         this.serviceRepository = serviceRepository;
     }
 
-    public List<ServiceResponse> getAllServices() {
+    public List<ServiceSerialized> getAllServices() {
         return serviceRepository.findAll()
                 .stream()
-                .map(service -> new ServiceResponse(service))
+                .map(service -> new ServiceSerialized(service))
                 .toList();
     }
 
-    public ServiceResponse getServiceById(UUID id) {
+    public ServiceSerialized getServiceById(UUID id) {
         ServiceEntity service = serviceRepository.findOneOrFail(id);
 
-        return new ServiceResponse(service);
+        return new ServiceSerialized(service);
     }
 
-    public ServiceResponse createService(ServiceRequest request) {
+    public ServiceSerialized createService(ServiceRequest request) {
         ServiceEntity service = new ServiceEntity(request.price(), request.type());
         ServiceEntity saved = serviceRepository.save(service);
 
-        return new ServiceResponse(saved);
+        return new ServiceSerialized(saved);
     }
 
-    public ServiceResponse updateService(UUID id, ServiceRequest request) {
+    public ServiceSerialized updateService(UUID id, ServiceRequest request) {
         ServiceEntity service = serviceRepository.findOneOrFail(id);
 
         service.setPrice(request.price());
@@ -47,7 +47,7 @@ public class ServiceService {
 
         ServiceEntity updated = serviceRepository.save(service);
 
-        return new ServiceResponse(updated);
+        return new ServiceSerialized(updated);
     }
 
     public void deleteService(UUID id) {

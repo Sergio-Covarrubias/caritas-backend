@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.caritas.backend.core.users.dtos.UserRequest;
-import com.caritas.backend.core.users.dtos.UserResponse;
+import com.caritas.backend.core.users.dtos.UserSerialized;
 import com.caritas.backend.core.users.entities.UserEntity;
 import com.caritas.backend.core.users.entities.UserRepository;
 
@@ -18,28 +18,28 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<UserResponse> getAllUsers() {
+    public List<UserSerialized> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(user -> new UserResponse(user))
+                .map(user -> new UserSerialized(user))
                 .toList();
     }
 
-    public UserResponse getUserById(String id) {
+    public UserSerialized getUserById(String id) {
         UserEntity user = userRepository.findOneOrFail(id);
 
-        return new UserResponse(user);
+        return new UserSerialized(user);
     }
 
-    public UserResponse createUser(UserRequest request) {
+    public UserSerialized createUser(UserRequest request) {
         UserEntity user = new UserEntity(request.id(), request.firstName(), request.lastName(), request.email(),
                 request.phoneNumber());
         UserEntity saved = userRepository.save(user);
 
-        return new UserResponse(saved);
+        return new UserSerialized(saved);
     }
 
-    public UserResponse updateUser(String id, UserRequest request) {
+    public UserSerialized updateUser(String id, UserRequest request) {
         UserEntity user = userRepository.findOneOrFail(id);
 
         user.setFirstName(request.firstName());
@@ -49,7 +49,7 @@ public class UserService {
 
         UserEntity updated = userRepository.save(user);
 
-        return new UserResponse(updated);
+        return new UserSerialized(updated);
     }
 
     public void deleteUser(String id) {

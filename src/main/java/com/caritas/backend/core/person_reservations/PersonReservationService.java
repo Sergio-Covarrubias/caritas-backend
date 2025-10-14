@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.caritas.backend.core.person_reservations.dtos.PersonReservationRequest;
-import com.caritas.backend.core.person_reservations.dtos.PersonReservationResponse;
+import com.caritas.backend.core.person_reservations.dtos.PersonReservationSerialized;
 import com.caritas.backend.core.person_reservations.entities.PersonReservationEntity;
 import com.caritas.backend.core.person_reservations.entities.PersonReservationRepository;
 import com.caritas.backend.core.persons.entities.PersonEntity;
@@ -29,20 +29,20 @@ public class PersonReservationService {
         this.reservationRepository = reservationRepository;
     }
 
-    public List<PersonReservationResponse> getAllPersonReservations() {
+    public List<PersonReservationSerialized> getAllPersonReservations() {
         return personReservationRepository.findAll()
                 .stream()
-                .map(personReservation -> new PersonReservationResponse(personReservation))
+                .map(personReservation -> new PersonReservationSerialized(personReservation, personReservation.getPerson(), personReservation.getReservation()))
                 .toList();
     }
 
-    public PersonReservationResponse getPersonReservationById(UUID id) {
+    public PersonReservationSerialized getPersonReservationById(UUID id) {
         PersonReservationEntity personReservation = personReservationRepository.findOneOrFail(id);
 
-        return new PersonReservationResponse(personReservation);
+        return new PersonReservationSerialized(personReservation, personReservation.getPerson(), personReservation.getReservation());
     }
 
-    public PersonReservationResponse createPersonReservation(PersonReservationRequest request) {
+    public PersonReservationSerialized createPersonReservation(PersonReservationRequest request) {
         PersonEntity person = personRepository.findOneOrFail(request.personId());
         ReservationEntity reservation = reservationRepository.findOneOrFail(request.reservationId());
 
@@ -50,15 +50,15 @@ public class PersonReservationService {
 
         PersonReservationEntity saved = personReservationRepository.save(personReservation);
 
-        return new PersonReservationResponse(saved, person.getId(), reservation.getId());
+        return new PersonReservationSerialized(saved, person, reservation);
     }
 
-    public PersonReservationResponse updatePersonReservation(UUID id, PersonReservationRequest request) {
+    public PersonReservationSerialized updatePersonReservation(UUID id, PersonReservationRequest request) {
         PersonReservationEntity personReservation = personReservationRepository.findOneOrFail(id);
 
         PersonReservationEntity updated = personReservationRepository.save(personReservation);
 
-        return new PersonReservationResponse(updated);
+        return new PersonReservationSerialized(updated, updated.getPerson(), updated.getReservation());
     }
 
     public void deletePersonReservation(UUID id) {
