@@ -22,9 +22,6 @@ public class UserEntity {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "email", nullable = false)
-    private String email;
-
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
 
@@ -37,11 +34,10 @@ public class UserEntity {
     public UserEntity() {
     }
 
-    public UserEntity(String id, String firstName, String lastName, String email, String phoneNumber) {
+    public UserEntity(String id, String firstName, String lastName, String phoneNumber) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.email = email;
         this.phoneNumber = phoneNumber;
     }
 
@@ -63,14 +59,6 @@ public class UserEntity {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-    
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPhoneNumber() {

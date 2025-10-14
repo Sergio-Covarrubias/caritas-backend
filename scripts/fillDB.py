@@ -23,8 +23,8 @@ def random_date(start: date, end: date) -> date:
     days = (end - start).days
     return start + timedelta(days=random.randint(0, days))
 
-def gen_phone_10_digits() -> str:
-    return "".join(str(random.randint(0, 9)) for _ in range(10))
+def gen_phone_number() -> str:
+    return "+52" + "".join(str(random.randint(0, 9)) for _ in range(10))
 
 # ---------- Core actions ----------
 def wipe_data():
@@ -44,8 +44,7 @@ def create_users_with_persons(count=5):
             "id": fake.uuid4(),
             "firstName": fake.first_name(),
             "lastName": fake.last_name(),
-            "email": fake.email(),
-            "phoneNumber": gen_phone_10_digits()
+            "phoneNumber": gen_phone_number()
         }
         r = requests.post(BASE_URL + USERS_ENDPOINT, json=user_payload)
         r.raise_for_status()

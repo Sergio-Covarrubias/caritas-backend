@@ -32,8 +32,7 @@ public class UserService {
     }
 
     public UserSerialized createUser(UserRequest request) {
-        UserEntity user = new UserEntity(request.id(), request.firstName(), request.lastName(), request.email(),
-                request.phoneNumber());
+        UserEntity user = new UserEntity(request.id(), request.firstName(), request.lastName(), request.phoneNumber());
         UserEntity saved = userRepository.save(user);
 
         return new UserSerialized(saved);
@@ -44,7 +43,6 @@ public class UserService {
 
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
-        user.setEmail(request.email());
         user.setPhoneNumber(request.phoneNumber());
 
         UserEntity updated = userRepository.save(user);

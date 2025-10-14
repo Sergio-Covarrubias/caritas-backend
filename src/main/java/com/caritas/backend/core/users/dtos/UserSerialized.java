@@ -2,8 +2,8 @@ package com.caritas.backend.core.users.dtos;
 
 import com.caritas.backend.core.users.entities.UserEntity;
 
-public record UserSerialized(String id, String firstName, String lastName, String email, String phoneNumber) {
+public record UserSerialized(String id, String firstName, String lastName, String phoneNumber) {
     public UserSerialized(UserEntity user) {
-        this(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(), user.getPhoneNumber());
+        this(user.getId(), user.getFirstName(), user.getLastName(), user.getPhoneNumber());
     }
 }
