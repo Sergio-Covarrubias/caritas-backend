@@ -37,7 +37,7 @@ public class ReservationEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
-    private ReservationState state = ReservationState.ACTIVE;
+    private ReservationState state = ReservationState.PENDING;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ServiceReservationEntity> serviceReservations = new ArrayList<>();
@@ -48,11 +48,12 @@ public class ReservationEntity {
     public ReservationEntity() {
     }
 
-    public ReservationEntity(UserEntity user, HostelEntity hostel, LocalDate startDate, LocalDate endDate) {
+    public ReservationEntity(UserEntity user, HostelEntity hostel, LocalDate startDate, LocalDate endDate, ReservationState state) {
         this.user = user;
         this.hostel = hostel;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.state = state;
     }
 
     public UUID getId() {

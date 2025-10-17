@@ -20,6 +20,7 @@ import com.caritas.backend.core.reservations.dtos.RepeatReservationRequest;
 import com.caritas.backend.core.reservations.dtos.ReservationRequest;
 import com.caritas.backend.core.reservations.dtos.ReservationSerialized;
 import com.caritas.backend.core.reservations.dtos.UserReservationsResponse;
+import com.caritas.backend.core.reservations.entities.ReservationState;
 
 import jakarta.validation.Valid;
 
@@ -57,8 +58,10 @@ public class ReservationController {
     }
 
     @PostMapping
-    public ReservationSerialized createReservation(@Valid @RequestBody CreateReservationRequest request) {
-        return reservationService.createReservation(request);
+    public ReservationSerialized createReservation(
+        @RequestHeader("x-user-id") String userId,    
+        @Valid @RequestBody CreateReservationRequest request) {
+        return reservationService.createReservation(userId, request, ReservationState.PENDING);
     }
 
     @PostMapping("/repeat/{id}")

@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caritas.backend.core.reservations.dtos.GetActiveReservation;
-import com.caritas.backend.core.reservations.dtos.ReservationSerialized;
 import com.caritas.backend.core.users.dtos.UserRequest;
 import com.caritas.backend.core.users.dtos.UserSerialized;
 
@@ -36,9 +36,10 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @GetMapping("/{id}/reservation")
-    public GetActiveReservation getUserActiveReservation(@PathVariable String id) {
-        return userService.getUserActiveReservation(id);
+    @GetMapping("/reservation")
+    public GetActiveReservation getUserActiveReservation(
+        @RequestHeader("x-user-id") String userId) {
+        return userService.getUserActiveReservation(userId);
     }
 
     @PostMapping

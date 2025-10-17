@@ -44,14 +44,16 @@ public class ReservationService {
     public List<ReservationSerialized> getAllReservations() {
         return reservationRepository.findAll()
                 .stream()
-                .map(reservation -> new ReservationSerialized(reservation, reservation.getUser(), reservation.getHostel(), null, null, false, false))
+                .map(reservation -> new ReservationSerialized(reservation, reservation.getUser(),
+                        reservation.getHostel(), null, null, false, false))
                 .toList();
     }
 
     public ReservationSerialized getReservationById(UUID id) {
         ReservationEntity reservation = reservationRepository.findOneOrFail(id);
 
-        return new ReservationSerialized(reservation, reservation.getUser(), reservation.getHostel(), reservation.getPersonReservations(), reservation.getServiceReservations(), true, true);
+        return new ReservationSerialized(reservation, reservation.getUser(), reservation.getHostel(),
+                reservation.getPersonReservations(), reservation.getServiceReservations(), true, true);
     }
 
     public UserReservationsResponse getUserReservationHistory(String userId, int limit, int page) {
@@ -73,24 +75,33 @@ public class ReservationService {
     }
 
     public GetReservationsDashboard getReservationsDashboard() {
-        GetReservationsDashboard.ReservationBody[] pendingReservations = this.reservationRepository.findAllByState(ReservationState.PENDING).stream().map(reservation -> new GetReservationsDashboard.ReservationBody(reservation)).toArray(GetReservationsDashboard.ReservationBody[]::new);
-        GetReservationsDashboard.ReservationBody[] activeReservations = this.reservationRepository.findAllByState(ReservationState.ACTIVE).stream().map(reservation -> new GetReservationsDashboard.ReservationBody(reservation)).toArray(GetReservationsDashboard.ReservationBody[]::new);
+        GetReservationsDashboard.ReservationBody[] pendingReservations = this.reservationRepository
+                .findAllByState(ReservationState.PENDING).stream()
+                .map(reservation -> new GetReservationsDashboard.ReservationBody(reservation))
+                .toArray(GetReservationsDashboard.ReservationBody[]::new);
+        GetReservationsDashboard.ReservationBody[] activeReservations = this.reservationRepository
+                .findAllByState(ReservationState.ACTIVE).stream()
+                .map(reservation -> new GetReservationsDashboard.ReservationBody(reservation))
+                .toArray(GetReservationsDashboard.ReservationBody[]::new);
 
         return new GetReservationsDashboard(pendingReservations, activeReservations);
     }
 
     @Transactional
-    public ReservationSerialized createReservation(CreateReservationRequest request) {
-        boolean hasActiveReservation = reservationRepository.existsByUserIdAndState(request.userId(),
-                ReservationState.ACTIVE);
-        if (hasActiveReservation) {
-            throw new IllegalStateException("User already has an active reservation");
+    public ReservationSerialized createReservation(String userId, CreateReservationRequest request,
+            ReservationState state) {
+        if (state == ReservationState.PENDING || state == ReservationState.ACTIVE) {
+            boolean hasActiveReservation = reservationRepository.existsByUserIdAndState(userId,
+                    ReservationState.ACTIVE);
+            if (hasActiveReservation) {
+                throw new IllegalStateException("User already has an active reservation");
+            }
         }
 
-        UserEntity user = userRepository.findOneOrFail(request.userId());
+        UserEntity user = userRepository.findOneOrFail(userId);
         HostelEntity hostel = hostelRepository.findOneOrFail(request.hostelId());
 
-        ReservationEntity reservation = new ReservationEntity(user, hostel, request.startDate(), request.endDate());
+        ReservationEntity reservation = new ReservationEntity(user, hostel, request.startDate(), request.endDate(), state);
 
         for (UUID personId : request.personIds()) {
             PersonEntity person = this.personRepository.findOneOrFail(personId);
@@ -109,17 +120,20 @@ public class ReservationService {
                 .map(personReservation -> personReservation.getPerson().getId())
                 .toArray(UUID[]::new);
 
-        CreateReservationRequest reservationRequest = new CreateReservationRequest(reservation.getUser().getId(),
-                reservation.getHostel().getId(), request.startDate(), request.endDate(), personIds);
-        return this.createReservation(reservationRequest);
+        CreateReservationRequest reservationRequest = new CreateReservationRequest(reservation.getHostel().getId(),
+                request.startDate(), request.endDate(), personIds);
+        return this.createReservation(reservation.getUser().getId(), reservationRequest, ReservationState.PENDING);
     }
 
     public ReservationSerialized updateReservation(UUID id, ReservationRequest request) {
         ReservationEntity reservation = reservationRepository.findOneOrFail(id);
 
-        if (request.startDate() != null) reservation.setStartDate(request.startDate());
-        if (request.endDate() != null) reservation.setEndDate(request.endDate());        
-        if (request.state() != null) reservation.setState(request.state());
+        if (request.startDate() != null)
+            reservation.setStartDate(request.startDate());
+        if (request.endDate() != null)
+            reservation.setEndDate(request.endDate());
+        if (request.state() != null)
+            reservation.setState(request.state());
 
         ReservationEntity updated = reservationRepository.save(reservation);
 

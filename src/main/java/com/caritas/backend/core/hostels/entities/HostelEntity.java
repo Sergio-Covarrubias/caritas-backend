@@ -25,6 +25,9 @@ public class HostelEntity {
     @Column(name = "description", columnDefinition = "TEXT", nullable = false)
     private String description;
 
+    @Column(name = "price", nullable = false)
+    private Float price;
+
     @Column(name = "max_capacity", nullable = false)
     private Integer maxCapacity;
 
@@ -43,9 +46,10 @@ public class HostelEntity {
     public HostelEntity() {
     }
 
-    public HostelEntity(String name, String description, Integer maxCapacity, String locationUrl, String[] imageUrls) {
+    public HostelEntity(String name, String description, Float price, Integer maxCapacity, String locationUrl, String[] imageUrls) {
         this.name = name;
         this.description = description;
+        this.price = price;
         this.maxCapacity = maxCapacity;
         this.locationUrl = locationUrl;
         setImageUrls(imageUrls);
@@ -69,6 +73,14 @@ public class HostelEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Float getPrice() {
+        return price;
+    }
+
+    public void setPrice(Float price) {
+        this.price = price;
     }
 
     public Integer getMaxCapacity() {
