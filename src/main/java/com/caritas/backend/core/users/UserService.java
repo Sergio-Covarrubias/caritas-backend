@@ -4,6 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.caritas.backend.core.reservations.dtos.GetActiveReservation;
+import com.caritas.backend.core.reservations.dtos.ReservationSerialized;
+import com.caritas.backend.core.reservations.entities.ReservationEntity;
+import com.caritas.backend.core.reservations.entities.ReservationRepository;
+import com.caritas.backend.core.reservations.entities.ReservationState;
 import com.caritas.backend.core.users.dtos.UserRequest;
 import com.caritas.backend.core.users.dtos.UserSerialized;
 import com.caritas.backend.core.users.entities.UserEntity;
@@ -13,9 +18,11 @@ import com.caritas.backend.core.users.entities.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ReservationRepository reservationRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, ReservationRepository reservationRepository) {
         this.userRepository = userRepository;
+        this.reservationRepository = reservationRepository;
     }
 
     public List<UserSerialized> getAllUsers() {
@@ -29,6 +36,16 @@ public class UserService {
         UserEntity user = userRepository.findOneOrFail(id);
 
         return new UserSerialized(user);
+    }
+
+    public GetActiveReservation getUserActiveReservation(String id) {
+        UserEntity user = userRepository.findOneOrFail(id);
+        ReservationEntity activeReservation = reservationRepository.findByUserIdAndState(id,
+                ReservationState.ACTIVE).orElse(null);
+        
+        ReservationSerialized serializedReservation = activeReservation != null ? new ReservationSerialized(activeReservation, user, activeReservation.getHostel(), activeReservation.getPersonReservations(), activeReservation.getServiceReservations(), true, true) : null;
+
+        return new GetActiveReservation(serializedReservation);
     }
 
     public UserSerialized createUser(UserRequest request) {

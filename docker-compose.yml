@@ -25,6 +25,7 @@ services:
     environment:
       DB_URL: jdbc:postgresql://database:5432/caritas_db
       BASE_PATH: /api
+      SELF_API_URL: ${SELF_API_URL}
       STAGE: prod
       
       DB_USER: ${DB_USER}
@@ -44,8 +45,6 @@ services:
       - "8080:8080"
     volumes:
       - ./nginx.local.conf:/etc/nginx/nginx.conf:ro
-    depends_on:
-      - core
     restart: always
     networks:
       - backend

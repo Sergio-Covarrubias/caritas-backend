@@ -40,12 +40,11 @@ public class ServiceReservationEntity {
     public ServiceReservationEntity() {
     }
 
-    public ServiceReservationEntity(ReservationEntity reservation, ServiceEntity service, LocalDate orderDate, Integer costCount, ServiceReservationState state, String externalReservationId) {
+    public ServiceReservationEntity(ReservationEntity reservation, ServiceEntity service, LocalDate orderDate, Integer costCount, String externalReservationId) {
         this.reservation = reservation;
         this.service = service;
         this.orderDate = orderDate;
         this.costCount = costCount;
-        this.state = state;
         this.externalReservationId = externalReservationId;
     }
 
