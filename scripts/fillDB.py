@@ -33,7 +33,7 @@ def wipe_data():
     r.raise_for_status()
     print("Wiped all data")
 
-def create_users_with_persons(count=5):
+def create_users_with_persons(count):
     users = []
     persons_by_user = {}
 
@@ -154,7 +154,6 @@ def create_hostel_services(hostels, services):
     print(f"Linked {len(results)} hostel-services")
     return results
 
-# ---------- NEW FUNCTION ----------
 def create_service_reservations_for_reservation(reservation, services):
     """Create 3 service reservations for a given reservation."""
     reservation_id = reservation["id"]
@@ -197,7 +196,6 @@ def create_service_reservations_for_reservation(reservation, services):
             rc.raise_for_status()
             print(f"        ↳ Confirmed service reservation {service_res_id}")
 
-# ---------- RESERVATION CREATION ----------
 def create_reservations(users, persons_by_user, hostels, services):
     start_limit = date(2025, 10, 1)
     end_limit = date(2025, 11, 30)
@@ -215,6 +213,9 @@ def create_reservations(users, persons_by_user, hostels, services):
 
         start_date = random_date(start_limit, end_limit)
         end_date = random_date(start_date, end_limit) if random.random() > 0.5 else None
+
+        # 50% chance for ACTIVE or PENDING
+        state = "ACTIVE" if random.random() < 0.5 else "PENDING"
     
         reservation_payload = {
             "userId": uid,
@@ -222,7 +223,7 @@ def create_reservations(users, persons_by_user, hostels, services):
             "startDate": start_date.strftime("%Y-%m-%d"),
             "endDate": end_date.strftime("%Y-%m-%d") if end_date else None,
             "personIds": person_ids,
-            "state": "ACTIVE"
+            "state": state
         }
 
         r = requests.post(BASE_URL + RESERVATIONS_ENDPOINT, json=reservation_payload)
@@ -230,10 +231,14 @@ def create_reservations(users, persons_by_user, hostels, services):
         reservation_obj = r.json()
         reservation_id = reservation_obj.get("id") or reservation_obj
         created_reservations.append(reservation_obj)
-        print(f"Created ACTIVE reservation {reservation_id} for user {uid} (endDate={end_date})")
+        print(f"Created {state} reservation {reservation_id} for user {uid} (endDate={end_date})")
 
-        # Create related service reservations
-        create_service_reservations_for_reservation(reservation_obj, [s for s in services if s["type"] not in ("transportations")])
+        # Only create service reservations if state is ACTIVE
+        if state == "ACTIVE":
+            create_service_reservations_for_reservation(
+                reservation_obj, 
+                [s for s in services if s["type"] not in ("transportations")]
+            )
 
     return created_reservations
 
@@ -282,7 +287,7 @@ def main():
         print("=== STARTING SEED SCRIPT ===")
         wipe_data()
 
-        users, persons_by_user = create_users_with_persons(count=5)
+        users, persons_by_user = create_users_with_persons(count=8)
         services = create_services()
         hostels = create_hostels()
         create_hostel_services(hostels, services)
