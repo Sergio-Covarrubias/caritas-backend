@@ -8,13 +8,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.caritas.backend.core.reservations.dtos.GetActiveReservation;
-import com.caritas.backend.core.users.dtos.UserRequest;
+import com.caritas.backend.core.users.dtos.UpdateUserRequest;
+import com.caritas.backend.core.users.dtos.CreateUserRequest;
 import com.caritas.backend.core.users.dtos.UserSerialized;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -26,7 +27,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
+    @GetMapping()
     public List<UserSerialized> getAllUsers() {
         return userService.getAllUsers();
     }
@@ -36,19 +37,13 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @GetMapping("/reservation")
-    public GetActiveReservation getUserActiveReservation(
-        @RequestHeader("x-user-id") String userId) {
-        return userService.getUserActiveReservation(userId);
-    }
-
-    @PostMapping
-    public UserSerialized createUser(@RequestBody UserRequest request) {
+    @PostMapping()
+    public UserSerialized createUser(@Valid @RequestBody CreateUserRequest request) {
         return userService.createUser(request);
     }
 
     @PutMapping("/{id}")
-    public UserSerialized updateUser(@PathVariable String id, @RequestBody UserRequest request) {
+    public UserSerialized updateUser(@PathVariable String id, @Valid  @RequestBody UpdateUserRequest request) {
         return userService.updateUser(id, request);
     }
 

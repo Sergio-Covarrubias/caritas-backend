@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.caritas.backend.core.hostel_services.dtos.HostelServiceRequest;
+import com.caritas.backend.core.hostel_services.dtos.CreateHostelServiceRequest;
 import com.caritas.backend.core.hostel_services.dtos.HostelServiceSerialized;
 import com.caritas.backend.core.hostel_services.entities.HostelServiceEntity;
 import com.caritas.backend.core.hostel_services.entities.HostelServiceRepository;
@@ -41,7 +41,7 @@ public class HostelServiceService {
         return new HostelServiceSerialized(hostelService, hostelService.getHostel(), hostelService.getService());
     }
 
-    public HostelServiceSerialized createHostelService(HostelServiceRequest request) {
+    public HostelServiceSerialized createHostelService(CreateHostelServiceRequest request) {
         HostelEntity hostel = hostelRepository.findOneOrFail(request.hostelId());
         ServiceEntity service = serviceRepository.findOneOrFail(request.serviceId());
 
@@ -51,7 +51,7 @@ public class HostelServiceService {
         return new HostelServiceSerialized(saved, hostel, service);
     }
 
-    public HostelServiceSerialized updateHostelService(UUID id, HostelServiceRequest request) {
+    public HostelServiceSerialized updateHostelService(UUID id, CreateHostelServiceRequest request) {
         HostelServiceEntity hostelService = hostelServiceRepository.findOneOrFail(id);
 
         HostelServiceEntity updated = hostelServiceRepository.save(hostelService);

@@ -6,16 +6,17 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.caritas.backend.common.errors.BadRequestException;
 import com.caritas.backend.core.hostels.entities.HostelEntity;
 import com.caritas.backend.core.hostels.entities.HostelRepository;
 import com.caritas.backend.core.person_reservations.entities.PersonReservationEntity;
 import com.caritas.backend.core.persons.entities.PersonEntity;
 import com.caritas.backend.core.persons.entities.PersonRepository;
 import com.caritas.backend.core.reservations.dtos.CreateReservationRequest;
-import com.caritas.backend.core.reservations.dtos.GetReservationsDashboard;
+import com.caritas.backend.core.reservations.dtos.GetActiveReservationResponse;
 import com.caritas.backend.core.reservations.dtos.RepeatReservationRequest;
-import com.caritas.backend.core.reservations.dtos.ReservationRequest;
 import com.caritas.backend.core.reservations.dtos.ReservationSerialized;
+import com.caritas.backend.core.reservations.dtos.UpdateReservationRequest;
 import com.caritas.backend.core.reservations.dtos.UserReservationsResponse;
 import com.caritas.backend.core.reservations.entities.ReservationEntity;
 import com.caritas.backend.core.reservations.entities.ReservationRepository;
@@ -56,6 +57,16 @@ public class ReservationService {
                 reservation.getPersonReservations(), reservation.getServiceReservations(), true, true);
     }
 
+    public GetActiveReservationResponse getUserActiveReservation(String id) {
+        UserEntity user = userRepository.findOneOrFail(id);
+        ReservationEntity activeReservation = reservationRepository.findByUserIdAndState(id,
+                ReservationState.ACTIVE).orElse(null);
+        
+        ReservationSerialized serializedReservation = activeReservation != null ? new ReservationSerialized(activeReservation, user, activeReservation.getHostel(), activeReservation.getPersonReservations(), activeReservation.getServiceReservations(), true, true) : null;
+
+        return new GetActiveReservationResponse(serializedReservation);
+    }
+
     public UserReservationsResponse getUserReservationHistory(String userId, int limit, int page) {
         // Get the active reservation if it exists
         Optional<ReservationEntity> activeReservationOpt = reservationRepository.findByUserIdAndState(userId,
@@ -74,27 +85,17 @@ public class ReservationService {
         return new UserReservationsResponse(activeReservation, previousReservations);
     }
 
-    public GetReservationsDashboard getReservationsDashboard() {
-        GetReservationsDashboard.ReservationBody[] pendingReservations = this.reservationRepository
-                .findAllByState(ReservationState.PENDING).stream()
-                .map(reservation -> new GetReservationsDashboard.ReservationBody(reservation))
-                .toArray(GetReservationsDashboard.ReservationBody[]::new);
-        GetReservationsDashboard.ReservationBody[] activeReservations = this.reservationRepository
-                .findAllByState(ReservationState.ACTIVE).stream()
-                .map(reservation -> new GetReservationsDashboard.ReservationBody(reservation))
-                .toArray(GetReservationsDashboard.ReservationBody[]::new);
-
-        return new GetReservationsDashboard(pendingReservations, activeReservations);
-    }
-
     @Transactional
     public ReservationSerialized createReservation(String userId, CreateReservationRequest request,
             ReservationState state) {
         if (state == ReservationState.PENDING || state == ReservationState.ACTIVE) {
+            boolean hasPendingReservation = reservationRepository.existsByUserIdAndState(userId,
+                    ReservationState.PENDING);
+            
             boolean hasActiveReservation = reservationRepository.existsByUserIdAndState(userId,
                     ReservationState.ACTIVE);
-            if (hasActiveReservation) {
-                throw new IllegalStateException("User already has an active reservation");
+            if (hasPendingReservation || hasActiveReservation) {
+                throw new BadRequestException("User already has a pending or active reservation");
             }
         }
 
@@ -120,20 +121,17 @@ public class ReservationService {
                 .map(personReservation -> personReservation.getPerson().getId())
                 .toArray(UUID[]::new);
 
-        CreateReservationRequest reservationRequest = new CreateReservationRequest(reservation.getHostel().getId(),
+        CreateReservationRequest reservationRequest = new CreateReservationRequest(reservation.getUser().getId(), reservation.getHostel().getId(),
                 request.startDate(), request.endDate(), personIds);
         return this.createReservation(reservation.getUser().getId(), reservationRequest, ReservationState.PENDING);
     }
 
-    public ReservationSerialized updateReservation(UUID id, ReservationRequest request) {
+    public ReservationSerialized updateReservation(UUID id, UpdateReservationRequest request) {
         ReservationEntity reservation = reservationRepository.findOneOrFail(id);
 
-        if (request.startDate() != null)
-            reservation.setStartDate(request.startDate());
-        if (request.endDate() != null)
-            reservation.setEndDate(request.endDate());
-        if (request.state() != null)
-            reservation.setState(request.state());
+        if (request.startDate() != null) reservation.setStartDate(request.startDate());
+        if (request.endDate() != null) reservation.setEndDate(request.endDate());
+        if (request.state() != null) reservation.setState(request.state());
 
         ReservationEntity updated = reservationRepository.save(reservation);
 

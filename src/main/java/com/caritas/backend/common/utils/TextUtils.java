@@ -1,4 +1,4 @@
-package com.caritas.backend.common;
+package com.caritas.backend.common.utils;
 
 import java.util.Arrays;
 

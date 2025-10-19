@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.caritas.backend.core.person_reservations.dtos.PersonReservationRequest;
+import com.caritas.backend.core.person_reservations.dtos.CreatePersonReservationRequest;
 import com.caritas.backend.core.person_reservations.dtos.PersonReservationSerialized;
 import com.caritas.backend.core.person_reservations.entities.PersonReservationEntity;
 import com.caritas.backend.core.person_reservations.entities.PersonReservationRepository;
@@ -42,7 +42,7 @@ public class PersonReservationService {
         return new PersonReservationSerialized(personReservation, personReservation.getPerson(), personReservation.getReservation());
     }
 
-    public PersonReservationSerialized createPersonReservation(PersonReservationRequest request) {
+    public PersonReservationSerialized createPersonReservation(CreatePersonReservationRequest request) {
         PersonEntity person = personRepository.findOneOrFail(request.personId());
         ReservationEntity reservation = reservationRepository.findOneOrFail(request.reservationId());
 
@@ -53,7 +53,7 @@ public class PersonReservationService {
         return new PersonReservationSerialized(saved, person, reservation);
     }
 
-    public PersonReservationSerialized updatePersonReservation(UUID id, PersonReservationRequest request) {
+    public PersonReservationSerialized updatePersonReservation(UUID id, CreatePersonReservationRequest request) {
         PersonReservationEntity personReservation = personReservationRepository.findOneOrFail(id);
 
         PersonReservationEntity updated = personReservationRepository.save(personReservation);

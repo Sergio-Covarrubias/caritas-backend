@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.caritas.backend.common.ServiceNames;
 
 @RestController
-@RequestMapping("/" + ServiceNames.BREAKFAST)
+@RequestMapping("/internal/" + ServiceNames.BREAKFAST)
 public class BreakfastReservationController {
 
     private final BreakfastReservationService breakfastReservationService;

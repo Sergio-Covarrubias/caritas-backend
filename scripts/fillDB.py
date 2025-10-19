@@ -9,12 +9,12 @@ BASE_URL = "http://localhost:8080/api"
 WIPE_ENDPOINT = "/dev/wipe"
 USERS_ENDPOINT = "/users"
 PERSONS_ENDPOINT = "/persons"
-HOSTELS_ENDPOINT = "/hostels"
-SERVICES_ENDPOINT = "/services"
-HOSTEL_SERVICES_ENDPOINT = "/hostel-services"
+HOSTELS_ENDPOINT = "/admin/hostels"
+SERVICES_ENDPOINT = "/admin/services"
+HOSTEL_SERVICES_ENDPOINT = "/admin/hostel-services"
 RESERVATIONS_ENDPOINT = "/dev/reservations"
 SERVICE_RESERVATIONS_ENDPOINT = "/service-reservations"
-CONFIRM_SERVICE_RESERVATIONS_ENDPOINT = "/service-reservations/confirm"
+CONFIRM_SERVICE_RESERVATIONS_ENDPOINT = "/admin/service-reservations/confirm"
 
 # ---------- Utilities ----------
 def random_date(start: date, end: date) -> date:

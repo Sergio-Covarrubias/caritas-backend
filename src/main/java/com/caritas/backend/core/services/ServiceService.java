@@ -5,8 +5,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.caritas.backend.core.services.dtos.ServiceRequest;
+import com.caritas.backend.core.services.dtos.CreateServiceRequest;
 import com.caritas.backend.core.services.dtos.ServiceSerialized;
+import com.caritas.backend.core.services.dtos.UpdateServiceRequest;
 import com.caritas.backend.core.services.entities.ServiceEntity;
 import com.caritas.backend.core.services.entities.ServiceRepository;
 
@@ -32,18 +33,17 @@ public class ServiceService {
         return new ServiceSerialized(service);
     }
 
-    public ServiceSerialized createService(ServiceRequest request) {
+    public ServiceSerialized createService(CreateServiceRequest request) {
         ServiceEntity service = new ServiceEntity(request.price(), request.type());
         ServiceEntity saved = serviceRepository.save(service);
 
         return new ServiceSerialized(saved);
     }
 
-    public ServiceSerialized updateService(UUID id, ServiceRequest request) {
+    public ServiceSerialized updateService(UUID id, UpdateServiceRequest request) {
         ServiceEntity service = serviceRepository.findOneOrFail(id);
 
-        service.setPrice(request.price());
-        service.setType(request.type());
+        if (request.price() != null) service.setPrice(request.price());
 
         ServiceEntity updated = serviceRepository.save(service);
 

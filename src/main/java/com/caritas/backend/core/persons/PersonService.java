@@ -5,8 +5,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.caritas.backend.core.persons.dtos.PersonRequest;
+import com.caritas.backend.core.persons.dtos.CreatePersonRequest;
 import com.caritas.backend.core.persons.dtos.PersonSerialized;
+import com.caritas.backend.core.persons.dtos.UpdatePersonRequest;
 import com.caritas.backend.core.persons.entities.PersonEntity;
 import com.caritas.backend.core.persons.entities.PersonRepository;
 import com.caritas.backend.core.users.entities.UserEntity;
@@ -36,7 +37,7 @@ public class PersonService {
         return new PersonSerialized(person, person.getUser());
     }
 
-    public PersonSerialized createPerson(PersonRequest request) {
+    public PersonSerialized createPerson(CreatePersonRequest request) {
         UserEntity user = this.userRepository.findOneOrFail(request.userId());
 
         PersonEntity person = new PersonEntity(user, request.firstName(), request.lastName(), request.birthDate(),
@@ -47,15 +48,15 @@ public class PersonService {
         return new PersonSerialized(saved, person.getUser());
     }
 
-    public PersonSerialized updatePerson(UUID id, PersonRequest request) {
+    public PersonSerialized updatePerson(UUID id, UpdatePersonRequest request) {
         PersonEntity person = personRepository.findOneOrFail(id);
 
-        person.setFirstName(request.firstName());
-        person.setLastName(request.lastName());
-        person.setBirthDate(request.birthDate());
-        person.setAlergies(request.alergies());
-        person.setDiscapacities(request.discapacities());
-        person.setMedicines(request.medicines());
+        if (request.firstName() != null) person.setFirstName(request.firstName());
+        if (request.lastName() != null) person.setLastName(request.lastName());
+        if (request.birthDate() != null) person.setBirthDate(request.birthDate());
+        if (request.alergies() != null) person.setAlergies(request.alergies());
+        if (request.discapacities() != null) person.setDiscapacities(request.discapacities());
+        if (request.medicines() != null) person.setMedicines(request.medicines());
 
         PersonEntity updated = personRepository.save(person);
 

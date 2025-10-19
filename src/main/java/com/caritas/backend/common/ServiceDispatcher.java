@@ -1,5 +1,6 @@
 package com.caritas.backend.common;
 
+import com.caritas.backend.common.utils.UtilsJSON;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +42,7 @@ public class ServiceDispatcher {
         String serviceName = UtilsJSON.getField("serviceName", request, true).asText();
         ServiceNames.isValidServiceOrThrow(serviceName);
 
-        JsonNode externalReservationResponse = callApi(baseUrl + "/" + serviceName, request);
+        JsonNode externalReservationResponse = callApi(baseUrl + "/internal/" + serviceName, request);
 
         String externalReservationId = UtilsJSON.getField("id", externalReservationResponse, true)
                 .asText();

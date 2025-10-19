@@ -12,16 +12,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.caritas.backend.core.services.dtos.ServiceRequest;
+import com.caritas.backend.core.services.dtos.CreateServiceRequest;
 import com.caritas.backend.core.services.dtos.ServiceSerialized;
+import com.caritas.backend.core.services.dtos.UpdateServiceRequest;
+
+import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/services")
-public class ServiceController {
+@RequestMapping("/admin/services")
+public class ServiceControllerAdmin {
 
     private final ServiceService serviceService;
 
-    public ServiceController(ServiceService serviceService) {
+    public ServiceControllerAdmin(ServiceService serviceService) {
         this.serviceService = serviceService;
     }
 
@@ -36,12 +39,12 @@ public class ServiceController {
     }
 
     @PostMapping
-    public ServiceSerialized createService(@RequestBody ServiceRequest request) {
+    public ServiceSerialized createService(@Valid @RequestBody CreateServiceRequest request) {
         return serviceService.createService(request);
     }
 
     @PutMapping("/{id}")
-    public ServiceSerialized updateService(@PathVariable UUID id, @RequestBody ServiceRequest request) {
+    public ServiceSerialized updateService(@PathVariable UUID id, @Valid  @RequestBody UpdateServiceRequest request) {
         return serviceService.updateService(id, request);
     }
 

@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.caritas.backend.core.person_reservations.dtos.PersonReservationRequest;
+import com.caritas.backend.core.person_reservations.dtos.CreatePersonReservationRequest;
 import com.caritas.backend.core.person_reservations.dtos.PersonReservationSerialized;
 
 @RestController
-@RequestMapping("/person-reservations")
-public class PersonReservationController {
+@RequestMapping("/admin/person-reservations")
+public class PersonReservationControllerAdmin {
 
     private final PersonReservationService personReservationService;
 
-    public PersonReservationController(PersonReservationService personReservationService) {
+    public PersonReservationControllerAdmin(PersonReservationService personReservationService) {
         this.personReservationService = personReservationService;
     }
 
@@ -36,12 +36,12 @@ public class PersonReservationController {
     }
 
     @PostMapping
-    public PersonReservationSerialized createPersonReservation(@RequestBody PersonReservationRequest request) {
+    public PersonReservationSerialized createPersonReservation(@RequestBody CreatePersonReservationRequest request) {
         return personReservationService.createPersonReservation(request);
     }
 
     @PutMapping("/{id}")
-    public PersonReservationSerialized updatePersonReservation(@PathVariable UUID id, @RequestBody PersonReservationRequest request) {
+    public PersonReservationSerialized updatePersonReservation(@PathVariable UUID id, @RequestBody CreatePersonReservationRequest request) {
         return personReservationService.updatePersonReservation(id, request);
     }
 

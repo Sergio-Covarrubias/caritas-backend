@@ -7,8 +7,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.caritas.backend.core.hostels.dtos.HostelPaginationResponse;
-import com.caritas.backend.core.hostels.dtos.HostelRequest;
+import com.caritas.backend.core.hostels.dtos.CreateHostelRequest;
 import com.caritas.backend.core.hostels.dtos.HostelSerialized;
+import com.caritas.backend.core.hostels.dtos.UpdateHostelRequest;
 import com.caritas.backend.core.hostels.entities.HostelEntity;
 import com.caritas.backend.core.hostels.entities.HostelRepository;
 import com.caritas.backend.core.reservations.entities.ReservationState;
@@ -47,13 +48,20 @@ public class HostelService {
                 .skip(limit * (page - 1)).limit(limit).toList();
     }
 
+    public List<HostelSerialized> getAllHostels() {
+        return hostelRepository.findAll()
+                .stream()
+                .map(hostel -> new HostelSerialized(hostel, hostel.getHostelServices(), null))
+                .toList();
+    }
+
     public HostelSerialized getHostelById(UUID id) {
         HostelEntity hostel = hostelRepository.findOneOrFail(id);
 
         return new HostelSerialized(hostel, hostel.getHostelServices(), null);
     }
 
-    public HostelSerialized createHostel(HostelRequest request) {
+    public HostelSerialized createHostel(CreateHostelRequest request) {
         HostelEntity hostel = new HostelEntity(request.name(), request.description(), request.price(),
                 request.maxCapacity(), request.locationUrl(), request.imageUrls());
         HostelEntity saved = hostelRepository.save(hostel);
@@ -61,15 +69,16 @@ public class HostelService {
         return new HostelSerialized(saved, null, null);
     }
 
-    public HostelSerialized updateHostel(UUID id, HostelRequest request) {
+    public HostelSerialized updateHostel(UUID id, UpdateHostelRequest request) {
         HostelEntity hostel = hostelRepository.findOneOrFail(id);
 
-        hostel.setName(request.name());
-        hostel.setDescription(request.description());
-        hostel.setPrice(request.price());
-        hostel.setMaxCapacity(request.maxCapacity());
-        hostel.setLocationUrl(request.locationUrl());
-        hostel.setImageUrls(request.imageUrls());
+
+        if (request.name() != null) hostel.setName(request.name());
+        if (request.description() != null) hostel.setDescription(request.description());
+        if (request.price() != null) hostel.setPrice(request.price());
+        if (request.maxCapacity() != null) hostel.setMaxCapacity(request.maxCapacity());
+        if (request.locationUrl() != null) hostel.setLocationUrl(request.locationUrl());
+        if (request.imageUrls() != null) hostel.setImageUrls(request.imageUrls());
 
         HostelEntity updated = hostelRepository.save(hostel);
 

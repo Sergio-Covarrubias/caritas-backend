@@ -1,9 +1,9 @@
 **CONFIGURE THE ENV FILE**
 Before running the project, you need to create a ".env" file at the root of the project with the following variables for the databse:
 
-DB_NAME=<INSERT_DB_NAME>
 DB_USER=<INSERT_DB_USER>
 DB_PASSWORD=<INSERT_DB_PASSWORD>
+SELF_API_URL=http://localhost:8080/api
 
 You can freely choose the values for these variables, as when you build the images for the first time (which you'll do in the next section) the database container will create a new database within a volume with the specified characteristics.
 

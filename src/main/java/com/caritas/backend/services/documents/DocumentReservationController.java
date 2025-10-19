@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.caritas.backend.common.ServiceNames;
 
 @RestController
-@RequestMapping("/" + ServiceNames.DOCUMENT)
+@RequestMapping("/internal/" + ServiceNames.DOCUMENT)
 public class DocumentReservationController {
 
     private final DocumentReservationService documentReservationService;

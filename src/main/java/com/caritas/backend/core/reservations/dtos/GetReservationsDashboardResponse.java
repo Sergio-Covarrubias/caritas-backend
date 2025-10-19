@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import com.caritas.backend.core.reservations.entities.ReservationEntity;
 
-public record GetReservationsDashboard(ReservationBody[] pendingReservation, ReservationBody[] activeReservations) {
+public record GetReservationsDashboardResponse(ReservationBody[] pendingReservation, ReservationBody[] activeReservations) {
     public record ReservationBody(UUID reservationId, String userFullName, String hostelName, Integer peopleCount, LocalDate startDate, LocalDate endDate) {
         public ReservationBody(ReservationEntity reservation) {
             this(

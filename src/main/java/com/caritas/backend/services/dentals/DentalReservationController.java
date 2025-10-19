@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.caritas.backend.common.ServiceNames;
 
 @RestController
-@RequestMapping("/" + ServiceNames.DENTAL)
+@RequestMapping("/internal/" + ServiceNames.DENTAL)
 public class DentalReservationController {
 
     private final DentalReservationService dentalReservationService;

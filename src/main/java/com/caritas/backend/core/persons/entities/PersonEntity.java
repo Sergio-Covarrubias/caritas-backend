@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import com.caritas.backend.common.TextUtils;
+import com.caritas.backend.common.utils.TextUtils;
 import com.caritas.backend.core.person_reservations.entities.PersonReservationEntity;
 import com.caritas.backend.core.users.entities.UserEntity;
 

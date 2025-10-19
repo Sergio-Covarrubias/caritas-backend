@@ -1,5 +1,6 @@
-package com.caritas.backend.common;
+package com.caritas.backend.common.utils;
 
+import com.caritas.backend.common.errors.BadRequestException;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class UtilsJSON {
@@ -8,7 +9,7 @@ public class UtilsJSON {
             if (!required)
                 return null;
 
-            throw new RuntimeException("The field '" + fieldName + "' is mandatory");
+            throw new BadRequestException("Field '" + fieldName + "' must not be null");
         }
 
         return request.get(fieldName);

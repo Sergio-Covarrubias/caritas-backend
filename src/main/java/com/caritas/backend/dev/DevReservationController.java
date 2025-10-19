@@ -13,20 +13,20 @@ import com.caritas.backend.core.reservations.dtos.CreateReservationRequest;
 import com.caritas.backend.core.reservations.dtos.ReservationSerialized;
 import com.caritas.backend.core.reservations.entities.ReservationState;
 
-import io.micrometer.common.lang.NonNull;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 @RestController
 @RequestMapping("/dev/reservations")
 public class DevReservationController {
     public record DevCreateReservationRequest(
-            @NonNull String userId,
-            @NonNull UUID hostelId,
-            @NonNull LocalDate startDate,
-            @NonNull LocalDate endDate,
+            @NotNull String userId,
+            @NotNull UUID hostelId,
+            @NotNull LocalDate startDate,
+            LocalDate endDate,
             @NotEmpty UUID[] personIds,
-            @NonNull ReservationState state) {
+            @NotNull ReservationState state) {
     }
 
     private final ReservationService reservationService;
@@ -39,7 +39,7 @@ public class DevReservationController {
     public ReservationSerialized createReservationWithState(@Valid @RequestBody DevCreateReservationRequest request) {
         return this.reservationService.createReservation(
                 request.userId,
-                new CreateReservationRequest(request.hostelId(),
+                new CreateReservationRequest(request.userId(), request.hostelId(),
                         request.startDate(), request.endDate(), request.personIds()),
                 request.state());
     }

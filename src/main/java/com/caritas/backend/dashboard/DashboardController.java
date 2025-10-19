@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caritas.backend.common.ServiceNames;
+import com.caritas.backend.core.reservations.dtos.GetReservationsDashboardResponse;
 import com.caritas.backend.core.reservations.entities.ReservationRepository;
 import com.caritas.backend.core.reservations.entities.ReservationState;
 import com.caritas.backend.core.service_reservations.entities.ServiceReservationRepository;
@@ -30,7 +31,7 @@ public class DashboardController {
         this.serviceReservationRepository = serviceReservationRepository;
     }
 
-    @GetMapping("/resevations-histogram")
+    @GetMapping("/reservations-histogram")
     public YearlyHistogramResponse GetReservationsHistogram() {
         Integer[] frequencies = new Integer[12];
         Arrays.fill(frequencies, 0);
@@ -118,5 +119,19 @@ public class DashboardController {
                 counts.get(ServiceNames.DENTAL),
                 counts.get(ServiceNames.MENTAL),
                 counts.get(ServiceNames.DOCUMENT));
+    }
+
+    @GetMapping("/reservations")
+    public GetReservationsDashboardResponse getReservationsDashboard() {
+        GetReservationsDashboardResponse.ReservationBody[] pendingReservations = this.reservationRepository
+                .findAllByState(ReservationState.PENDING).stream()
+                .map(reservation -> new GetReservationsDashboardResponse.ReservationBody(reservation))
+                .toArray(GetReservationsDashboardResponse.ReservationBody[]::new);
+        GetReservationsDashboardResponse.ReservationBody[] activeReservations = this.reservationRepository
+                .findAllByState(ReservationState.ACTIVE).stream()
+                .map(reservation -> new GetReservationsDashboardResponse.ReservationBody(reservation))
+                .toArray(GetReservationsDashboardResponse.ReservationBody[]::new);
+
+        return new GetReservationsDashboardResponse(pendingReservations, activeReservations);
     }
 }

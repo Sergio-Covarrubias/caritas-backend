@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.caritas.backend.common.ServiceNames;
 
 @RestController
-@RequestMapping("/" + ServiceNames.LAUNDRY)
+@RequestMapping("/internal/" + ServiceNames.LAUNDRY)
 public class LaundryReservationController {
 
     private final LaundryReservationService laundryReservationService;

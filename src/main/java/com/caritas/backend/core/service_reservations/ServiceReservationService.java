@@ -7,11 +7,11 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.caritas.backend.common.ServiceDispatcher;
-import com.caritas.backend.common.UtilsJSON;
+import com.caritas.backend.common.utils.UtilsJSON;
 import com.caritas.backend.core.reservations.entities.ReservationEntity;
 import com.caritas.backend.core.reservations.entities.ReservationRepository;
-import com.caritas.backend.core.service_reservations.dtos.ServiceReservationRequest;
 import com.caritas.backend.core.service_reservations.dtos.ServiceReservationSerialized;
+import com.caritas.backend.core.service_reservations.dtos.UpdateServiceReservationRequest;
 import com.caritas.backend.core.service_reservations.entities.ServiceReservationEntity;
 import com.caritas.backend.core.service_reservations.entities.ServiceReservationRepository;
 import com.caritas.backend.core.service_reservations.entities.ServiceReservationState;
@@ -77,11 +77,9 @@ public class ServiceReservationService {
         return new ServiceReservationSerialized(updated, updated.getReservation(), updated.getService());
     }
 
-    public ServiceReservationSerialized updateServiceReservation(UUID id, ServiceReservationRequest request) {
+    public ServiceReservationSerialized updateServiceReservation(UUID id, UpdateServiceReservationRequest request) {
         ServiceReservationEntity serviceReservation = serviceReservationRepository.findOneOrFail(id);
 
-        serviceReservation.setOrderDate(request.orderDate());
-        serviceReservation.setCostCount(request.costCount());
         serviceReservation.setState(request.state());
         ServiceReservationEntity updated = serviceReservationRepository.save(serviceReservation);
 

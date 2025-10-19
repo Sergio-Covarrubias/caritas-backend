@@ -1,23 +1,20 @@
 package com.caritas.backend.core.reservations;
 
-import java.util.List;
 import java.util.UUID;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.caritas.backend.common.ValidateHeaderUserId;
 import com.caritas.backend.core.reservations.dtos.CreateReservationRequest;
-import com.caritas.backend.core.reservations.dtos.GetReservationsDashboard;
+import com.caritas.backend.core.reservations.dtos.GetActiveReservationResponse;
 import com.caritas.backend.core.reservations.dtos.RepeatReservationRequest;
-import com.caritas.backend.core.reservations.dtos.ReservationRequest;
 import com.caritas.backend.core.reservations.dtos.ReservationSerialized;
 import com.caritas.backend.core.reservations.dtos.UserReservationsResponse;
 import com.caritas.backend.core.reservations.entities.ReservationState;
@@ -34,49 +31,39 @@ public class ReservationController {
         this.reservationService = reservationService;
     }
 
-    @GetMapping
-    public List<ReservationSerialized> getAllReservations() {
-        return reservationService.getAllReservations();
-    }
-
     @GetMapping("/{id}")
     public ReservationSerialized getReservationById(@PathVariable UUID id) {
         return reservationService.getReservationById(id);
     }
 
-    @GetMapping("/user")
-    public UserReservationsResponse getUserReservationHistory(
-            @RequestHeader("x-user-id") String userId,
-            @RequestParam(defaultValue = "5") int limit,
-            @RequestParam(defaultValue = "1") int page) {
-        return reservationService.getUserReservationHistory(userId, limit, page);
+    @GetMapping("/user/{userId}")
+    public GetActiveReservationResponse getUserActiveReservation(
+            @RequestHeader(value = "x-user-id", required = false) String headerUserId,
+            @PathVariable String userId) {
+        ValidateHeaderUserId.validateOrThrow(headerUserId, userId);
+        return reservationService.getUserActiveReservation(userId);
     }
 
-    @GetMapping("/dashboard")
-    public GetReservationsDashboard getReservationsDashboard() {
-        return reservationService.getReservationsDashboard();
+    @GetMapping("/user/history/{userId}")
+    public UserReservationsResponse getUserReservationHistory(
+            @RequestHeader(value = "x-user-id", required = false) String headerUserId,
+            @PathVariable String userId,
+            @RequestParam(defaultValue = "5") int limit,
+            @RequestParam(defaultValue = "1") int page) {
+        ValidateHeaderUserId.validateOrThrow(headerUserId, userId);
+        return reservationService.getUserReservationHistory(userId, limit, page);
     }
 
     @PostMapping
     public ReservationSerialized createReservation(
-        @RequestHeader("x-user-id") String userId,    
-        @Valid @RequestBody CreateReservationRequest request) {
-        return reservationService.createReservation(userId, request, ReservationState.PENDING);
+            @RequestHeader(value = "x-user-id", required = false) String headerUserId,
+            @Valid @RequestBody CreateReservationRequest request) {
+        ValidateHeaderUserId.validateOrThrow(headerUserId, request.userId());
+        return reservationService.createReservation(request.userId(), request, ReservationState.PENDING);
     }
 
     @PostMapping("/repeat/{id}")
     public ReservationSerialized repeatReservation(@Valid @RequestBody RepeatReservationRequest request) {
         return reservationService.repeatReservation(request);
-    }
-
-    @PutMapping("/{id}")
-    public ReservationSerialized updateReservation(@PathVariable UUID id,
-            @Valid @RequestBody ReservationRequest request) {
-        return reservationService.updateReservation(id, request);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteReservation(@PathVariable UUID id) {
-        reservationService.deleteReservation(id);
     }
 }

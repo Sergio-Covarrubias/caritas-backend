@@ -12,16 +12,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.caritas.backend.core.hostel_services.dtos.HostelServiceRequest;
+import com.caritas.backend.core.hostel_services.dtos.CreateHostelServiceRequest;
 import com.caritas.backend.core.hostel_services.dtos.HostelServiceSerialized;
 
 @RestController
-@RequestMapping("/hostel-services")
-public class HostelServiceController {
+@RequestMapping("/admin/hostel-services")
+public class HostelServiceControllerAdmin {
 
     private final HostelServiceService hostelServiceService;
 
-    public HostelServiceController(HostelServiceService hostelServiceService) {
+    public HostelServiceControllerAdmin(HostelServiceService hostelServiceService) {
         this.hostelServiceService = hostelServiceService;
     }
 
@@ -36,12 +36,12 @@ public class HostelServiceController {
     }
 
     @PostMapping
-    public HostelServiceSerialized createHostelService(@RequestBody HostelServiceRequest request) {
+    public HostelServiceSerialized createHostelService(@RequestBody CreateHostelServiceRequest request) {
         return hostelServiceService.createHostelService(request);
     }
 
     @PutMapping("/{id}")
-    public HostelServiceSerialized updateHostelService(@PathVariable UUID id, @RequestBody HostelServiceRequest request) {
+    public HostelServiceSerialized updateHostelService(@PathVariable UUID id, @RequestBody CreateHostelServiceRequest request) {
         return hostelServiceService.updateHostelService(id, request);
     }
 

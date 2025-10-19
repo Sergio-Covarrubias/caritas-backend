@@ -2,6 +2,8 @@ package com.caritas.backend.common;
 
 import java.util.Set;
 
+import com.caritas.backend.common.errors.BadRequestException;
+
 public class ServiceNames {
     public static final String TRANSPORTATION = "transportations";
     public static final String BREAKFAST = "breakfasts";
@@ -17,7 +19,7 @@ public class ServiceNames {
 
     public static void isValidServiceOrThrow(String serviceName) {
         if (!SERVICES.contains(serviceName)) {
-            throw new RuntimeException(serviceName + " is not a valid service name");
+            throw new BadRequestException(serviceName + " is not a valid service name");
         }
     }
 }
