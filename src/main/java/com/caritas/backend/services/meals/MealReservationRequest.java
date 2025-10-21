@@ -2,4 +2,9 @@ package com.caritas.backend.services.meals;
 
 import java.time.LocalDate;
 
-public record MealReservationRequest(LocalDate orderDate, Integer count) {}
+import jakarta.validation.constraints.NotNull;
+
+public record MealReservationRequest(
+        @NotNull LocalDate orderDate,
+        @NotNull Integer count) {
+}

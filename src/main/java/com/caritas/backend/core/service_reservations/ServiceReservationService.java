@@ -51,6 +51,12 @@ public class ServiceReservationService {
                 serviceReservation.getService());
     }
 
+    public JsonNode getServiceReservationByIdWithDetails(UUID id) {
+        ServiceReservationEntity serviceReservation = serviceReservationRepository.findOneOrFail(id);
+
+        return this.serviceDispatcher.getServiceReservation(serviceReservation.getService().getType(), serviceReservation.getExternalReservationId());
+    }
+
     public ServiceReservationSerialized createServiceReservation(JsonNode request) {
         UUID reservationId = UUID.fromString(request.get("reservationId").asText());
         ReservationEntity reservation = this.reservationRepository.findOneOrFail(reservationId);

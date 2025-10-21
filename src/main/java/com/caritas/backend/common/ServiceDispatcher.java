@@ -16,12 +16,12 @@ public class ServiceDispatcher {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private JsonNode callApi(String url, JsonNode body) {
+    private JsonNode callApi(HttpMethod method, String url, JsonNode body) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<JsonNode> requestEntity = new HttpEntity<>(body, headers);
 
-        ResponseEntity<JsonNode> response = restTemplate.exchange(url, HttpMethod.POST, requestEntity, JsonNode.class);
+        ResponseEntity<JsonNode> response = restTemplate.exchange(url, method, requestEntity, JsonNode.class);
 
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             JsonNode bodyResponse = response.getBody();
@@ -42,12 +42,18 @@ public class ServiceDispatcher {
         String serviceName = UtilsJSON.getField("serviceName", request, true).asText();
         ServiceNames.isValidServiceOrThrow(serviceName);
 
-        JsonNode externalReservationResponse = callApi(baseUrl + "/internal/" + serviceName, request);
+        JsonNode externalReservationResponse = callApi(HttpMethod.POST, baseUrl + "/internal/" + serviceName, request);
 
         String externalReservationId = UtilsJSON.getField("id", externalReservationResponse, true)
                 .asText();
         Integer count = UtilsJSON.getField("count", externalReservationResponse, true).asInt();
 
         return new ServiceReservationCallResponse(externalReservationId, count);
+    }
+
+    public JsonNode getServiceReservation(String serviceName, String externalReservationId) {
+        ServiceNames.isValidServiceOrThrow(serviceName);
+
+        return callApi(HttpMethod.GET, baseUrl + "/internal/" + serviceName + "/" + externalReservationId, null);
     }
 }

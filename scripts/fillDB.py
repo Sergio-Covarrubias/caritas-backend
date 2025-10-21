@@ -1,3 +1,6 @@
+import argparse
+import os
+from dotenv import load_dotenv
 import requests
 import random
 from faker import Faker
@@ -5,16 +8,34 @@ from datetime import date, timedelta
 
 fake = Faker()
 
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'))
+
+session = requests.Session()
+AUTH_HEADERS = {}
+
+parser = argparse.ArgumentParser(description="Seed database with dummy data")
+parser.add_argument("--prod", action="store_true", help="Use production signup flow")
+args = parser.parse_args()
+
+IS_PROD = args.prod
+
 BASE_URL = "http://localhost:8080/api"
+LOGIN_ENDPOINT = "/admin/login"
 WIPE_ENDPOINT = "/dev/wipe"
 USERS_ENDPOINT = "/users"
-PERSONS_ENDPOINT = "/persons"
+PERSONS_ENDPOINT = "/admin/persons"
 HOSTELS_ENDPOINT = "/admin/hostels"
 SERVICES_ENDPOINT = "/admin/services"
 HOSTEL_SERVICES_ENDPOINT = "/admin/hostel-services"
 RESERVATIONS_ENDPOINT = "/dev/reservations"
-SERVICE_RESERVATIONS_ENDPOINT = "/service-reservations"
+SERVICE_RESERVATIONS_ENDPOINT = "/admin/service-reservations"
 CONFIRM_SERVICE_RESERVATIONS_ENDPOINT = "/admin/service-reservations/confirm"
+
+if IS_PROD:
+    ONLINE_URL = os.getenv("ONLINE_URL")
+    if not ONLINE_URL:
+        raise ValueError("ONLINE_URL environment variable not found in .env file")
+    BASE_URL = ONLINE_URL
 
 # ---------- Utilities ----------
 def random_date(start: date, end: date) -> date:
@@ -28,8 +49,35 @@ def gen_phone_number() -> str:
     return "+52" + "".join(str(random.randint(0, 9)) for _ in range(10))
 
 # ---------- Core actions ----------
+def login_admin():
+    """Logs in the admin and sets the Authorization header for all requests."""
+    admin_email = os.getenv("ADMIN_EMAIL")
+    admin_password = os.getenv("ADMIN_PASSWORD")
+
+    if not admin_email or not admin_password:
+        raise ValueError("ADMIN_EMAIL and ADMIN_PASSWORD must be set in .env")
+
+    print("Logging in as admin...")
+
+    payload = {"email": admin_email, "password": admin_password}
+    url = f"{BASE_URL}{LOGIN_ENDPOINT}"
+
+    r = session.post(url, json=payload)
+    r.raise_for_status()
+    data = r.json()
+
+    id_token = data.get("idToken")
+    if not id_token:
+        raise ValueError("No idToken returned in admin login response")
+
+    # Set global header for all future requests
+    AUTH_HEADERS["Authorization"] = f"Bearer {id_token}"
+    session.headers.update(AUTH_HEADERS)
+
+    print("Admin login successful.")
+
 def wipe_data():
-    r = requests.post(BASE_URL + WIPE_ENDPOINT)
+    r = session.post(f"{BASE_URL}{WIPE_ENDPOINT}?prod={'true' if IS_PROD else 'false'}")
     r.raise_for_status()
     print("Wiped all data")
 
@@ -37,38 +85,67 @@ def create_users_with_persons(count):
     users = []
     persons_by_user = {}
 
-    for i in range(count):
-        user_payload = {
-            "id": fake.uuid4(),
-            "firstName": fake.first_name(),
-            "lastName": fake.last_name(),
-            "phoneNumber": gen_phone_number()
-        }
-        r = requests.post(BASE_URL + USERS_ENDPOINT, json=user_payload)
+    if IS_PROD:
+        # Fetch existing users from the production backend
+        print("Fetching existing users from backend...")
+        base = BASE_URL.rstrip("/")
+        r = session.get(f"{base}{USERS_ENDPOINT}")
         r.raise_for_status()
-        created_user = r.json()
-        users.append(created_user)
-        uid = created_user["id"]
-        persons_by_user[uid] = []
-        print(f"Created user {uid}")
+        users = r.json()
 
+        if not users:
+            raise RuntimeError("No users found in production system!")
+
+        print(f"Fetched {len(users)} existing users")
+        # Initialize the mapping
+        for user in users:
+            persons_by_user[user["id"]] = []
+
+    else:
+        # Local mode: create fake users
+        for i in range(count):
+            phone = gen_phone_number()
+            first_name = fake.first_name()
+            last_name = fake.last_name()
+
+            user_payload = {
+                "id": fake.uuid4(),
+                "firstName": first_name,
+                "lastName": last_name,
+                "phoneNumber": phone
+            }
+
+            r = session.post(BASE_URL + USERS_ENDPOINT, json=user_payload)
+            r.raise_for_status()
+            created_user = r.json()
+            users.append(created_user)
+            persons_by_user[created_user["id"]] = []
+            print(f"Created user {created_user['id']} (LOCAL)")
+
+    # Add persons for each user (both local and prod)
+    for user in users:
+        uid = user["id"]
         num_persons = random.randint(1, 3)
         for _ in range(num_persons):
-            # Generate a random birthdate between 1950 and 2022
             start_birth = date(1950, 1, 1)
             end_birth = date(2022, 12, 31)
             birth_date = random_date(start_birth, end_birth)
+
+            ALERGIAS = ["polen", "gluten", "lácteos", "mariscos", "cacahuates"]
+            DISCAPACIDADES = ["visual", "auditiva", "motora", "intelectual", "del habla"]
+            MEDICINAS = ["paracetamol", "ibuprofeno", "omeprazol", "insulina", "loratadina"]
 
             person_payload = {
                 "firstName": fake.first_name(),
                 "lastName": fake.last_name(),
                 "userId": uid,
                 "birthDate": birth_date.strftime("%Y-%m-%d"),
-                "alergies": [fake.word() for _ in range(random.randint(0, 3))],
-                "discapacities": [fake.word() for _ in range(random.randint(0, 3))],
-                "medicines": [fake.word() for _ in range(random.randint(0, 3))]
+                "alergies": random.sample(ALERGIAS, random.randint(0, 2)),
+                "discapacities": random.sample(DISCAPACIDADES, random.randint(0, 2)),
+                "medicines": random.sample(MEDICINAS, random.randint(0, 2))
             }
-            pr = requests.post(BASE_URL + PERSONS_ENDPOINT, json=person_payload)
+
+            pr = session.post(BASE_URL + PERSONS_ENDPOINT, json=person_payload)
             pr.raise_for_status()
             person_obj = pr.json()
             persons_by_user[uid].append(person_obj["id"])
@@ -90,7 +167,7 @@ def create_services():
     ]
     results = []
     for s in services_data:
-        r = requests.post(BASE_URL + SERVICES_ENDPOINT, json=s)
+        r = session.post(BASE_URL + SERVICES_ENDPOINT, json=s)
         r.raise_for_status()
         results.append(r.json())
     print(f"Created {len(results)} services")
@@ -137,7 +214,7 @@ def create_hostels():
     ]
     results = []
     for h in hostels_data:
-        r = requests.post(BASE_URL + HOSTELS_ENDPOINT, json=h)
+        r = session.post(BASE_URL + HOSTELS_ENDPOINT, json=h)
         r.raise_for_status()
         results.append(r.json())
     print(f"Created {len(results)} hostels")
@@ -148,7 +225,7 @@ def create_hostel_services(hostels, services):
     for hostel in hostels:
         for service in services:
             payload = {"hostelId": hostel["id"], "serviceId": service["id"]}
-            r = requests.post(BASE_URL + HOSTEL_SERVICES_ENDPOINT, json=payload)
+            r = session.post(BASE_URL + HOSTEL_SERVICES_ENDPOINT, json=payload)
             r.raise_for_status()
             results.append(r.json())
     print(f"Linked {len(results)} hostel-services")
@@ -182,7 +259,7 @@ def create_service_reservations_for_reservation(reservation, services):
             "state": "PENDING"
         }
 
-        r = requests.post(BASE_URL + SERVICE_RESERVATIONS_ENDPOINT, json=payload)
+        r = session.post(BASE_URL + SERVICE_RESERVATIONS_ENDPOINT, json=payload)
         r.raise_for_status()
         service_res = r.json()
         service_res_id = service_res.get("id") or service_res.get("uuid") or service_res
@@ -192,7 +269,7 @@ def create_service_reservations_for_reservation(reservation, services):
         # 50% chance to confirm the service reservation
         if random.random() < 0.5:
             confirm_url = f"{BASE_URL}{CONFIRM_SERVICE_RESERVATIONS_ENDPOINT}/{service_res_id}"
-            rc = requests.post(confirm_url)
+            rc = session.post(confirm_url)
             rc.raise_for_status()
             print(f"        ↳ Confirmed service reservation {service_res_id}")
 
@@ -226,7 +303,7 @@ def create_reservations(users, persons_by_user, hostels, services):
             "state": state
         }
 
-        r = requests.post(BASE_URL + RESERVATIONS_ENDPOINT, json=reservation_payload)
+        r = session.post(BASE_URL + RESERVATIONS_ENDPOINT, json=reservation_payload)
         r.raise_for_status()
         reservation_obj = r.json()
         reservation_id = reservation_obj.get("id") or reservation_obj
@@ -269,7 +346,7 @@ def create_past_reservations(users, persons_by_user, hostels, services):
                 "state": state
             }
 
-            r = requests.post(BASE_URL + RESERVATIONS_ENDPOINT, json=reservation_payload)
+            r = session.post(BASE_URL + RESERVATIONS_ENDPOINT, json=reservation_payload)
             r.raise_for_status()
             reservation_obj = r.json()
             reservation_id = reservation_obj.get("id") or reservation_obj
@@ -285,6 +362,10 @@ def create_past_reservations(users, persons_by_user, hostels, services):
 def main():
     try:
         print("=== STARTING SEED SCRIPT ===")
+
+        if IS_PROD:
+            login_admin()
+
         wipe_data()
 
         users, persons_by_user = create_users_with_persons(count=8)

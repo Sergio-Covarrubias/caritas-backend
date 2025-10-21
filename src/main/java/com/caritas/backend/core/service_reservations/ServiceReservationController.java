@@ -27,6 +27,11 @@ public class ServiceReservationController {
         return serviceReservationService.getServiceReservationById(id);
     }
 
+    @GetMapping("/{id}/details")
+    public JsonNode getServiceReservationByIdWithDetails(@PathVariable UUID id) {
+        return serviceReservationService.getServiceReservationByIdWithDetails(id);
+    }
+
     @PostMapping
     public ServiceReservationSerialized createServiceReservation(@RequestBody JsonNode request) {
         return serviceReservationService.createServiceReservation(request);

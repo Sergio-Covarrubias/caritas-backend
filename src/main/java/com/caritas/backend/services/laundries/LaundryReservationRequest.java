@@ -2,4 +2,9 @@ package com.caritas.backend.services.laundries;
 
 import java.time.LocalDate;
 
-public record LaundryReservationRequest(LocalDate orderDate, Integer count) {}
+import jakarta.validation.constraints.NotNull;
+
+public record LaundryReservationRequest(
+        @NotNull LocalDate orderDate,
+        @NotNull Integer count) {
+}

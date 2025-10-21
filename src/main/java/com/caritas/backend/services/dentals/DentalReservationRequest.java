@@ -2,4 +2,9 @@ package com.caritas.backend.services.dentals;
 
 import java.time.LocalDate;
 
-public record DentalReservationRequest(LocalDate orderDate, Integer count) {}
+import jakarta.validation.constraints.NotNull;
+
+public record DentalReservationRequest(
+        @NotNull LocalDate orderDate,
+        @NotNull Integer count) {
+}

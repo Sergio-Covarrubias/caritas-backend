@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.caritas.backend.common.BaseRepository;
+import com.caritas.backend.core.service_reservations.entities.ServiceReservationEntity;
+import com.caritas.backend.core.service_reservations.entities.ServiceReservationState;
 
 public interface ReservationRepository extends BaseRepository<ReservationEntity, UUID> {
     @Override
@@ -50,4 +52,18 @@ public interface ReservationRepository extends BaseRepository<ReservationEntity,
                 ORDER BY MONTH(r.startDate)
             """)
     List<Object[]> countReservationsByMonthAndState(@Param("year") int year);
+
+    @Query("""
+                SELECT sr
+                FROM ReservationEntity r
+                JOIN r.serviceReservations sr
+                JOIN sr.service s
+                WHERE r.user.id = :userId
+                  AND r.state = :reservationState
+                  AND s.type = :serviceName
+                  AND sr.state = :serviceState
+            """)
+    Optional<ServiceReservationEntity> findPendingServiceReservationByUserIdAndType(
+            @Param("userId") String userId, String serviceName,  ReservationState reservationState, ServiceReservationState serviceState);
+
 }

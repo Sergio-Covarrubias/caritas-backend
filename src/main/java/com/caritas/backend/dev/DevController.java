@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.caritas.backend.common.errors.BadRequestException;
@@ -102,7 +103,7 @@ public class DevController {
     }
 
     @PostMapping("/wipe")
-    public void wipeData() {
+    public void wipeData(@RequestParam(defaultValue = "false") String prod) {
         serviceReservationRepository.deleteAll();
         personReservationRepository.deleteAll();
         reservationRepository.deleteAll();
@@ -110,7 +111,9 @@ public class DevController {
         hostelRepository.deleteAll();
         serviceRepository.deleteAll();
         personRepository.deleteAll();
-        userRepository.deleteAll();
+        if (prod == "false") {
+            userRepository.deleteAll();
+        }
 
         bathReservationRepository.deleteAll();
         breakfastReservationRepository.deleteAll();

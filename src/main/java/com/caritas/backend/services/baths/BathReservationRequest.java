@@ -2,5 +2,9 @@ package com.caritas.backend.services.baths;
 
 import java.time.LocalDate;
 
-public record BathReservationRequest(LocalDate orderDate, Integer count) {   
+import jakarta.validation.constraints.NotNull;
+
+public record BathReservationRequest(
+        @NotNull LocalDate orderDate,
+        @NotNull Integer count) {
 }

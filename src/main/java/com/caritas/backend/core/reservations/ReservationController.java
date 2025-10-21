@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.caritas.backend.common.ValidateHeaderUserId;
 import com.caritas.backend.core.reservations.dtos.CreateReservationRequest;
 import com.caritas.backend.core.reservations.dtos.GetActiveReservationResponse;
+import com.caritas.backend.core.reservations.dtos.GetUserTransportationReservationResponse;
 import com.caritas.backend.core.reservations.dtos.RepeatReservationRequest;
 import com.caritas.backend.core.reservations.dtos.ReservationSerialized;
 import com.caritas.backend.core.reservations.dtos.UserReservationsResponse;
@@ -52,6 +53,14 @@ public class ReservationController {
             @RequestParam(defaultValue = "1") int page) {
         ValidateHeaderUserId.validateOrThrow(headerUserId, userId);
         return reservationService.getUserReservationHistory(userId, limit, page);
+    }
+
+    @GetMapping("/user/transportation/{userId}")
+    public GetUserTransportationReservationResponse getUserTransportationReservation(
+            @RequestHeader(value = "x-user-id", required = false) String headerUserId,
+            @PathVariable String userId) {
+        ValidateHeaderUserId.validateOrThrow(headerUserId, userId);
+        return reservationService.getUserTransportationReservation(userId);
     }
 
     @PostMapping

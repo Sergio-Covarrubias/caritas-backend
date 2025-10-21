@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.caritas.backend.core.service_reservations.dtos.ServiceReservationSerialized;
 import com.caritas.backend.core.service_reservations.dtos.UpdateServiceReservationRequest;
+import com.fasterxml.jackson.databind.JsonNode;
 
 import jakarta.validation.Valid;
 
@@ -35,6 +36,16 @@ public class ServiceReservationControllerAdmin {
     @GetMapping("/{id}")
     public ServiceReservationSerialized getServiceReservationById(@PathVariable UUID id) {
         return serviceReservationService.getServiceReservationById(id);
+    }
+
+    @GetMapping("/{id}/details")
+    public JsonNode getServiceReservationByIdWithDetails(@PathVariable UUID id) {
+        return serviceReservationService.getServiceReservationByIdWithDetails(id);
+    }
+
+    @PostMapping
+    public ServiceReservationSerialized createServiceReservation(@RequestBody JsonNode request) {
+        return serviceReservationService.createServiceReservation(request);
     }
 
     @PostMapping("/confirm/{id}")
