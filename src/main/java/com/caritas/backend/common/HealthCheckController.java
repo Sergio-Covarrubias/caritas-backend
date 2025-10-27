@@ -16,6 +16,6 @@ public class HealthCheckController {
 
     @GetMapping("/health")
     public HealthCheckResponse healthCheck() {
-        return new HealthCheckResponse("UP");
+        return new HealthCheckResponse("UP - ANOTHER CHANGE UPLOADED");
     }
 }
