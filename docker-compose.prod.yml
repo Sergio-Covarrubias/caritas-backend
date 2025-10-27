@@ -2,8 +2,24 @@ services:
   core:
     build:
       context: .
-      dockerfile: ./dockerfiles/core/Dockerfile-prod
+      dockerfile: ./dockerfiles/Dockerfile-prod
     container_name: core
+    environment:
+      DB_URL: ${DB_PROD_URL}
+      BASE_PATH: /api
+      SELF_API_URL: ${SELF_API_URL}
+      STAGE: prod
+
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - backend
+
+  service-reservations:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/Dockerfile-prod
+    container_name: service-reservations
     environment:
       DB_URL: ${DB_PROD_URL}
       BASE_PATH: /api
